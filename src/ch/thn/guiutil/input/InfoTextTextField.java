@@ -21,6 +21,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
 import javax.swing.JTextField;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
 /**
@@ -180,6 +181,25 @@ public class InfoTextTextField extends JTextField implements FocusListener {
 		return infoShown;
 	}
 	
+	@Override
+	public String getText() {
+		if (infoShown) {
+			//Nothing to return if info text is shown
+			return "";
+		} else {
+			return super.getText();
+		}
+	}
+	
+	@Override
+	public String getText(int offs, int len) throws BadLocationException {
+		if (infoShown) {
+			//Nothing to return if info text is shown
+			return "";
+		} else {
+			return super.getText(offs, len);
+		}
+	}
 	
 	@Override
 	public void setText(String t) {
