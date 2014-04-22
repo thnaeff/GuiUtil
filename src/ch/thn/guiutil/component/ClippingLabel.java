@@ -49,11 +49,13 @@ public class ClippingLabel extends JLabel implements AncestorListener, Component
 	public static final int CLIP_RIGHT = 1;
 	public static final int CLIP_CENTER = 2;
 	
-	private String originalText = null;
+	private String originalText = getText();
 	
 	private int clippingMode = CLIP_LEFT;
 	
+	private boolean isInitialized = false;
 	private boolean isClipped = false;
+	
 	
 
 	/**
@@ -126,6 +128,7 @@ public class ClippingLabel extends JLabel implements AncestorListener, Component
 	private void init() {
 		addAncestorListener(this);
 		addComponentListener(this);
+		isInitialized = true;
 	}
 	
 	/**
@@ -150,8 +153,16 @@ public class ClippingLabel extends JLabel implements AncestorListener, Component
 	
 	@Override
 	public void setText(String text) {
-		originalText = text;
-		updateClipping();
+		//This method is called when the super call in the constructor is called. 
+		//This means that the originalText variable is not even initialized and 
+		//will be overwritten with NULL when it is initialized.
+		
+		if (isInitialized) {
+			originalText = text;
+			updateClipping();
+		} else {
+			super.setText(text);
+		}
 	}
 	
 	/**
@@ -172,7 +183,7 @@ public class ClippingLabel extends JLabel implements AncestorListener, Component
 		
 		if (getFont() != null && originalText != null) {
 			FontMetrics fm = getFontMetrics(getFont());
-			int width = (int)getMaximumSize().getWidth();
+			int width = (int)getSize().getWidth();
 			
 			if (width > 0 && fm.stringWidth(originalText) > width) {
 				//Needs clipping
@@ -209,7 +220,6 @@ public class ClippingLabel extends JLabel implements AncestorListener, Component
 			super.setText(originalText);
 			setToolTipText("");
 		}
-
 		
 	}
 	

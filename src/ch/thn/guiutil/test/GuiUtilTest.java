@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import ch.thn.guiutil.component.ClippingLabel;
+
 
 /**
  * @author Thomas Naeff (github.com/thnaeff)
@@ -44,7 +46,11 @@ public class GuiUtilTest {
 		
 		p.add(new EffectsTest(), BorderLayout.SOUTH);
 		
-		p.add(new SimpleTableTest(), BorderLayout.CENTER);
+//		p.add(new SimpleTableTest(), BorderLayout.CENTER);
+		
+		p.add(new LabelledComponentPaneTest(), BorderLayout.CENTER);
+		
+//		p.add(new ClippingLabel("asdf löaksfdl aösdlf köals jfö sfas dasfdas fdasdfasdf asdfasdfaslaks fölaks fla jdsölasd fasd fsd"));
 		
 		
 //		JComponentDebugger debugger = new JComponentDebugger(p);
@@ -55,7 +61,7 @@ public class GuiUtilTest {
 		f.getContentPane().add(p);
 		
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setMinimumSize(new Dimension(800, 500));
+		f.setMinimumSize(new Dimension(500, 400));
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
 

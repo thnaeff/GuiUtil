@@ -33,7 +33,11 @@ import javax.swing.text.Element;
 import ch.thn.guiutil.Loader;
 
 /**
- *
+ * A text area in a scroll pane to display a certain number of messages (with or 
+ * without timestamp). Once the message limit is reached the oldest message gets 
+ * removed if a new one is added.
+ * 
+ * 
  * @author Thomas Naeff (github.com/thnaeff) Naeff
  *
  */

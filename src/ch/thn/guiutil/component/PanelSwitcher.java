@@ -31,7 +31,8 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 /**
- * 
+ * Some kind of button menu which has a panel assigned for each button and switches 
+ * to that panel if its button is clicked.
  * 
  * @author Thomas Naeff (github.com/thnaeff)
  *

@@ -79,7 +79,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener {
 		// ================================
 		
 		IconAnimation iconAnim = new IconAnimation(lIconAnimation, icons, 300);
-		iconAnim.addRunnableControlListener(this);
+		iconAnim.addControlledRunnableListener(this);
 		
 		Thread tIconAnim = new Thread(iconAnim);
 		tIconAnim.start();
@@ -92,7 +92,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener {
 		ImageAlphaGradient simpleGradientIn = new ImageAlphaGradient(ImageAlphaGradient.FADE_IN, 20, 0, 0);
 		
 		ImageAnimation imageAnimation = new ImageAnimation(this, 20, 20);
-		imageAnimation.addRunnableControlListener(this);
+		imageAnimation.addControlledRunnableListener(this);
 		imageAnimation.addStep(icons[0].getImage(), icons[1].getImage(), 
 				simpleGradientOut, simpleGradientIn, 100);
 		imageAnimation.addStep(icons[1].getImage(), icons[2].getImage(), 
