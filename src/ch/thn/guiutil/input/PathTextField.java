@@ -41,7 +41,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import ch.thn.guiutil.GuiUtilError;
 import ch.thn.guiutil.Loader;
 import ch.thn.guiutil.component.ClippingLabel;
-import ch.thn.guiutil.component.IconButton;
+import ch.thn.guiutil.component.PlainButton;
 import ch.thn.guiutil.component.extension.BorderContent;
 import ch.thn.guiutil.component.extension.BorderImage;
 import ch.thn.util.file.FileUtil;
@@ -80,7 +80,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	private BorderContent borderContent = null;
 	private BorderImage borderImage = null;
 	
-	private IconButton bIcon = null;
+	private PlainButton bIcon = null;
 	
 	private ClippingLabel lBasePath = null;
 	
@@ -168,7 +168,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		addAncestorListener(this);
 		addFocusListener(this);
 				
-		bIcon = new IconButton(Loader.loadIcon("/16x16/folder.png"), 
+		bIcon = new PlainButton(Loader.loadIcon("/16x16/folder.png"), 
 				Loader.loadIcon("/16x16/folder_explore.png"));
 		bIcon.setToolTipText("Browse");
 		

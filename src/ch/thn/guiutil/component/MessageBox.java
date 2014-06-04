@@ -47,7 +47,7 @@ public class MessageBox extends JPanel implements ActionListener {
 	private JTextArea textArea = null;
 	private JScrollPane scrollPane = null;
 	
-	private IconButton bClear = null;
+	private PlainButton bClear = null;
 	
 	private SimpleDateFormat timeAndDateFormat = new SimpleDateFormat("dd.MM.-kk:mm:ss");
 	
@@ -79,7 +79,7 @@ public class MessageBox extends JPanel implements ActionListener {
 		
 		setLayout(new BorderLayout());
 		
-		bClear = new IconButton(Loader.loadIcon("/16x16/clear.png"));
+		bClear = new PlainButton(Loader.loadIcon("/16x16/clear.png"));
 		bClear.setToolTipText("Clear messages");
 		bClear.addActionListener(this);
 		
