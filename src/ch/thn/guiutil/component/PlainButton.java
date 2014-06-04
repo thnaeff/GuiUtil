@@ -16,7 +16,7 @@
  */
 package ch.thn.guiutil.component;
 
-import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
@@ -124,10 +124,7 @@ public class PlainButton extends JButton implements FocusListener {
 			setPressedIcon(buttonIcon);
 		}
 		
-		Dimension dButton = new Dimension(buttonIcon.getIconWidth(), buttonIcon.getIconWidth());
-		setMinimumSize(dButton);
-		setPreferredSize(dButton);
-		setMaximumSize(dButton);
+		setMargin(new Insets(0, 0, 0, 0));
 		
 		addFocusListener(this);
 	}
