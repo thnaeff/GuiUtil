@@ -154,6 +154,11 @@ public class ExtendedBorder implements ExtensionBorder, Border {
 	public Insets getBorderInsets(Component c) {
 		Insets combinedInsets = null;
 		
+		if (border == null) {
+			//Use an empty border if there is none set
+			border = BorderFactory.createEmptyBorder();
+		}
+		
 		if (compoundBorder != null) {
 			combinedInsets = compoundBorder.getBorderInsets(c);
 		} else {

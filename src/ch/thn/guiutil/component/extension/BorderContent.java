@@ -16,6 +16,7 @@
  */
 package ch.thn.guiutil.component.extension;
 
+import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -130,6 +131,37 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	 * @param marginWest
 	 */
 	public BorderContent(JComponent component, int marginNorth, int marginEast, int marginSouth, int marginWest) {
+		initialize(component, marginNorth, marginEast, marginSouth, marginWest);
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param panel The panel to add content within its border. Only a panel 
+	 * with a BorderLayout can be used.
+	 * @param marginNorth
+	 * @param marginEast
+	 * @param marginSouth
+	 * @param marginWest
+	 */
+	public BorderContent(JPanel panel, int marginNorth, int marginEast, int marginSouth, int marginWest) {
+		if (!(panel.getLayout() instanceof BorderLayout) ){
+			throw new ComponentExtensionError("Only a JPanel with BorderLayout can be used.");
+		}
+		
+		initialize(panel, marginNorth, marginEast, marginSouth, marginWest);
+	}
+	
+	/**
+	 * 
+	 * 
+	 * @param component
+	 * @param marginNorth
+	 * @param marginEast
+	 * @param marginSouth
+	 * @param marginWest
+	 */
+	private void initialize(JComponent component, int marginNorth, int marginEast, int marginSouth, int marginWest) {
 		this.extendedComponent = component;
 		setMargins(marginNorth, marginEast, marginSouth, marginWest);
 		
@@ -143,6 +175,7 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		updateInsets();
 		updateComponents();
 	}
+	
 	
 	/**
 	 * 
