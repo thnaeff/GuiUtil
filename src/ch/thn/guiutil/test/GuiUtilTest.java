@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import ch.thn.guiutil.component.ClippingLabel;
+import ch.thn.guiutil.component.CollapsiblePane;
 
 
 /**
@@ -48,10 +49,15 @@ public class GuiUtilTest {
 		
 //		p.add(new SimpleTableTest(), BorderLayout.CENTER);
 		
-		p.add(new LabelledComponentPaneTest(), BorderLayout.CENTER);
+//		p.add(new LabelledComponentPaneTest(), BorderLayout.CENTER);
 		
 //		p.add(new ClippingLabel("asdf löaksfdl aösdlf köals jfö sfas dasfdas fdasdfasdf asdfasdfaslaks fölaks fla jdsölasd fasd fsd"));
 		
+//		p.add(new DisplayTreeTest());
+		
+//		p.add(new CollapsiblePaneTest());
+		
+		p.add(new MessageDetailsPanelTest());
 		
 //		JComponentDebugger debugger = new JComponentDebugger(p);
 //		debugger.setLayeredPane(f.getLayeredPane());

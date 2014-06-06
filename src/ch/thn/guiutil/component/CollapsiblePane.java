@@ -83,7 +83,6 @@ public class CollapsiblePane extends JPanel implements ActionListener {
 	private void collapsed(boolean collapsed) {
 		pComponent.setVisible(!collapsed);
 		bToggle.setIcon(collapsed ? Loader.loadIcon("/10x10/collapsed.png") : Loader.loadIcon("/10x10/expanded.png"));
-		validate();
 	}
 	
 	/**
