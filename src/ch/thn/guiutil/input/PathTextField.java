@@ -59,7 +59,7 @@ import ch.thn.util.file.PathWatcherListener;
  * The browsing button is shown on the right of the text field as folder icon. 
  * To use the browsing button, add an {@link ActionListener} to this text field using 
  * {@link #addButtonActionListener(ActionListener)}.<br>
- * The validation can be turned on and off with {@link #showStatus(boolean)}). When 
+ * The validation can be turned on and off with {@link #showStatus(boolean)}. When 
  * on, a small icon is added to the top left corner to show the validation status.<br>
  * The base path can be made visible with {@link #showBasePath(boolean)} and its 
  * length in the path text field can be set with {@link #setBasePathMaxWidth(int, boolean)}. 
@@ -508,8 +508,8 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 							//A file is expected
 							if (fileFilter.accept(f)) {
 								if (!showInvalidOnly) {
-									toolTip = "Existing file";
-									currentIcon = iFile;
+									toolTip = "New file/directory";
+									currentIcon = iNew;
 								}
 							} else {
 								toolTip = "Invalid file extension. Only " + fileFilter.getDescription() + " allowed";
