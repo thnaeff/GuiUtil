@@ -471,7 +471,7 @@ public class SimpleTableModel extends AbstractTableModel implements SimpleTableC
 	 * @param columnIndex
 	 * @return
 	 */
-	protected SimpleTableColumn getColumn(int columnIndex) {
+	public SimpleTableColumn getColumn(int columnIndex) {
 		return columns.get(columnIndex);
 	}
 	
