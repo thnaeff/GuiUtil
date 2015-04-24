@@ -47,7 +47,7 @@ public class GuiUtilTest {
 		
 		p.add(new EffectsTest(), BorderLayout.SOUTH);
 		
-//		p.add(new SimpleTableTest(), BorderLayout.CENTER);
+		p.add(new SimpleTableTest(), BorderLayout.CENTER);
 		
 //		p.add(new LabelledComponentPaneTest(), BorderLayout.CENTER);
 		
@@ -57,7 +57,7 @@ public class GuiUtilTest {
 		
 //		p.add(new CollapsiblePaneTest());
 		
-		p.add(new MessageDetailsPanelTest());
+//		p.add(new MessageDetailsPanelTest());
 		
 //		JComponentDebugger debugger = new JComponentDebugger(p);
 //		debugger.setLayeredPane(f.getLayeredPane());

@@ -28,54 +28,54 @@ import ch.thn.util.thread.ControlledRunnable;
  *
  */
 public class IconAnimation extends ControlledRunnable {
-	
+
 	private JLabel lIcon = null;
-	
+
 	private int iconIndex = 0;
 	private int timeout = 300;
 	private int looped = 0;
 	private int loops = 0;
-	
+
 	private boolean stopWhenDone = true;
-	
-	private Object o = new Object();
-	
-	
+
+	private final Object o = new Object();
+
+
 	private ImageIcon[] icons = null;
-	
-	
+
+
 	/**
 	 * Animates an icon with the given icons
 	 * 
 	 * @param lIcon
 	 * @param icons
-	 * @param timeout 
+	 * @param timeout
 	 */
 	public IconAnimation(JLabel lIcon, ImageIcon[] icons, int timeout) {
-		super(true);
-		
+		super(true, false);
+
 		this.lIcon = lIcon;
 		this.icons = icons;
 		this.timeout = timeout;
-		
+
 		if (icons != null) {
 			lIcon.setIcon(icons[0]);
 		}
-				
+
 		pause(true);
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * 
-	 * @param icons 
+	 * @param icons
 	 */
 	public void setIcons(ImageIcon[] icons) {
 		this.icons = icons;
 		lIcon.setIcon(icons[0]);
 	}
-	
+
 	/**
 	 * 
 	 * @param loops
@@ -88,7 +88,7 @@ public class IconAnimation extends ControlledRunnable {
 		iconIndex = 0;
 		pause(false);
 	}
-	
+
 	/**
 	 * 
 	 * @param loops
@@ -96,31 +96,31 @@ public class IconAnimation extends ControlledRunnable {
 	public void animate(int loops) {
 		animate(loops, false);
 	}
-	
-	
-	
+
+
+
 	@Override
 	public void run() {
-		running();
-		
+		runStart();
+
 		//Main loop
 		while (!isStopRequested()) {
-			doPause(true, false);
-			
+			runPause(false);
+
 			if (isStopRequested()) {
 				break;
 			}
-			
+
 			lIcon.setIcon(icons[iconIndex]);
-			
-			
+
+
 			if (iconIndex >= icons.length - 1) {
 				//All icons are through
-				
+
 				iconIndex = 0;
-				
+
 				looped++;
-				
+
 				//Repeat or stop
 				if (loops != 0 && looped >= loops) {
 					if (stopWhenDone) {
@@ -133,18 +133,18 @@ public class IconAnimation extends ControlledRunnable {
 				//Pick next icon
 				iconIndex++;
 			}
-			
-			
+
+
 			try {
 				synchronized (o) {
 					o.wait(timeout);
 				}
 			} catch (InterruptedException e) {}
-			
+
 		}
-		
-		stopped();
+
+		runEnd();
 	}
-	
-	
+
+
 }

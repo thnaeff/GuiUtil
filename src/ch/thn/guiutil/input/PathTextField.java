@@ -49,63 +49,64 @@ import ch.thn.util.file.PathWatcher;
 import ch.thn.util.file.PathWatcherListener;
 
 /**
- * A text field for entering and selecting a file path, with browsing button, 
- * validation, the possibility to set (and show) a base path and optional 
+ * A text field for entering and selecting a file path, with browsing button,
+ * validation, the possibility to set (and show) a base path and optional
  * file system watcher which watches the path for changes.<br>
  * <br>
- * The validation is triggered when the path in the text field changes, when the 
- * text field gets the focus and when the text field looses the focus. In addition, 
+ * The validation is triggered when the path in the text field changes, when the
+ * text field gets the focus and when the text field looses the focus. In addition,
  * the path watcher (if activated) can trigger the validation.<br>
- * The browsing button is shown on the right of the text field as folder icon. 
- * To use the browsing button, add an {@link ActionListener} to this text field using 
+ * The browsing button is shown on the right of the text field as folder icon.
+ * To use the browsing button, add an {@link ActionListener} to this text field using
  * {@link #addButtonActionListener(ActionListener)}.<br>
- * The validation can be turned on and off with {@link #showStatus(boolean)}. When 
+ * The validation can be turned on and off with {@link #showStatus(boolean)}. When
  * on, a small icon is added to the top left corner to show the validation status.<br>
- * The base path can be made visible with {@link #showBasePath(boolean)} and its 
- * length in the path text field can be set with {@link #setBasePathMaxWidth(int, boolean)}. 
- * When the base path is set, the path entered in the text field is always relative 
+ * The base path can be made visible with {@link #showBasePath(boolean)} and its
+ * length in the path text field can be set with {@link #setBasePathMaxWidth(int, boolean)}.
+ * When the base path is set, the path entered in the text field is always relative
  * to that base path.<br>
- * The file system watcher can be turned on with {@link #activatePathWatcher(boolean)}. 
- * When turned on, the path is automatically validated when the path text field does 
+ * The file system watcher can be turned on with {@link #activatePathWatcher(boolean)}.
+ * When turned on, the path is automatically validated when the path text field does
  * not have the focus and any directory or its content within the current path gets changed.
  * 
  * 
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class PathTextField extends InfoTextTextField implements DocumentListener, 
-	ComponentListener, AncestorListener, PathWatcherListener, FocusListener {
+public class PathTextField extends InfoTextTextField implements DocumentListener,
+ComponentListener, AncestorListener, PathWatcherListener, FocusListener {
 	private static final long serialVersionUID = 5554169796153183463L;
-	
+
 	private BorderContent borderContent = null;
 	private BorderImage borderImage = null;
-	
+
 	private PlainButton bIcon = null;
-	
+
 	private ClippingLabel lBasePath = null;
-	
+
 	private FileNameExtensionFilter fileFilter = null;
-	
+
 	private PathWatcher pathWatcher = null;
-	
+	private Thread pathWatcherThread = null;
+
 	private ImageIcon currentIcon = null;
 	private final ImageIcon iInit = Loader.loadIcon("/10x10/spacer.png");
 	private final ImageIcon iFile = Loader.loadIcon("/10x10/file.png");
 	private final ImageIcon iFolder = Loader.loadIcon("/10x10/folder.png");
 	private final ImageIcon iNew = Loader.loadIcon("/10x10/add_new.png");
 	private final ImageIcon iInvalid = Loader.loadIcon("/10x10/invalid.png");
-	
+
 	private boolean allowDirectory = true;
 	private boolean allowFile = true;
 	private boolean allowNew = true;
 	private boolean allowNewDirectory = true;
 	private boolean showInvalidOnly = false;
 	private boolean initOk = false;
-	
+
 	private String basePath = "";
-	
+
 	private int basePathPercentage = 0;
-	
+
 	/**
 	 * 
 	 * 
@@ -114,9 +115,9 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	 */
 	public PathTextField(String text, int columns) {
 		this(text, columns, true, true, true, true);
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -124,9 +125,9 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	 */
 	public PathTextField(int columns) {
 		this("", columns, true, true, true, true);
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -136,11 +137,11 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	 * @param allowNew
 	 * @param allowNewDirectory
 	 */
-	public PathTextField(int columns, boolean allowDirectory, boolean allowFile, 
+	public PathTextField(int columns, boolean allowDirectory, boolean allowFile,
 			boolean allowNew, boolean allowNewDirectory) {
 		this("", columns, allowDirectory, allowFile, allowNew, allowNewDirectory);
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -151,7 +152,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	 * @param allowNew
 	 * @param allowNewDirectory
 	 */
-	public PathTextField(String text, int columns, boolean allowDirectory, boolean allowFile, 
+	public PathTextField(String text, int columns, boolean allowDirectory, boolean allowFile,
 			boolean allowNew, boolean allowNewDirectory) {
 		super(text, columns);
 
@@ -159,42 +160,42 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		this.allowFile = allowFile;
 		this.allowNew = allowNew;
 		this.allowNewDirectory = allowNewDirectory;
-		
+
 		lBasePath = new ClippingLabel();
-				
+
 		setInfoText("Enter path (or browse and select)");
 		getDocument().addDocumentListener(this);
 		addComponentListener(this);
 		addAncestorListener(this);
 		addFocusListener(this);
-				
-		bIcon = new PlainButton(Loader.loadIcon("/16x16/folder.png"), 
+
+		bIcon = new PlainButton(Loader.loadIcon("/16x16/folder.png"),
 				Loader.loadIcon("/16x16/folder_explore.png"));
 		bIcon.setToolTipText("Browse");
-		
+
 		borderContent = new BorderContent(this, 0, 5, 0, 0);
 		borderContent.addComponent(bIcon, BorderContent.EAST);
-		
+
 		borderImage = new BorderImage(this);
 		borderImage.addImage(iInit.getImage(), BorderImage.NORTH_WEST, -4, -3);
 		borderImage.addImage(iFile.getImage(), BorderImage.NORTH_WEST, -4, -3);
 		borderImage.addImage(iFolder.getImage(), BorderImage.NORTH_WEST, -4, -3);
 		borderImage.addImage(iNew.getImage(), BorderImage.NORTH_WEST, -4, -3);
 		borderImage.addImage(iInvalid.getImage(), BorderImage.NORTH_WEST, -4, -3);
-		
+
 		borderImage.setMouseCursor(iInit.getImage(), Cursor.DEFAULT_CURSOR);
 		borderImage.setMouseCursor(iFile.getImage(), Cursor.DEFAULT_CURSOR);
 		borderImage.setMouseCursor(iFolder.getImage(), Cursor.DEFAULT_CURSOR);
 		borderImage.setMouseCursor(iNew.getImage(), Cursor.DEFAULT_CURSOR);
 		borderImage.setMouseCursor(iInvalid.getImage(), Cursor.DEFAULT_CURSOR);
-		
+
 		initOk = true;
-		
+
 		updatePathWatcher();
 		checkPath();
-		
+
 	}
-	
+
 	/**
 	 * Sets the font and color of the label showing the base path
 	 * 
@@ -205,14 +206,14 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		if (color != null) {
 			lBasePath.setForeground(color);
 		}
-		
+
 		if (font != null) {
 			lBasePath.setFont(font);
 		}
 	}
-	
+
 	/**
-	 * Activates the path watcher thread to watch for file system changes on 
+	 * Activates the path watcher thread to watch for file system changes on
 	 * the current path.
 	 * 
 	 * @param activate
@@ -222,14 +223,17 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 			if (pathWatcher == null) {
 				pathWatcher = new PathWatcher();
 				pathWatcher.addPathWatcherListener(this);
-				pathWatcher.start();
+
+				pathWatcherThread = new Thread(pathWatcher);
+				pathWatcherThread.start();
 			}
 		} else {
-			pathWatcher.end();
+			pathWatcher.stop();
 			pathWatcher = null;
+			pathWatcherThread = null;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param fileFilter
@@ -237,7 +241,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void setFileFilter(FileNameExtensionFilter fileFilter) {
 		this.fileFilter = fileFilter;
 	}
-	
+
 	/**
 	 * 
 	 * @param invalidOnly
@@ -245,36 +249,36 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void showInvalidOnly(boolean invalidOnly) {
 		showInvalidOnly = invalidOnly;
 	}
-	
+
 	/**
-	 * Sets the base path which is always added in front of the path visible in 
+	 * Sets the base path which is always added in front of the path visible in
 	 * the text field
 	 * 
 	 * @param basePath
 	 */
 	public void setBasePath(String basePath) {
 		this.basePath = FileUtil.addPathSeparator(basePath);
-		
+
 		lBasePath.setText(this.basePath);
 		borderContent.updateContent();
 	}
-	
+
 	/**
 	 * Enables/disables showing the base path
 	 * 
 	 * @param show
 	 */
-	public void showBasePath(boolean show) {		
+	public void showBasePath(boolean show) {
 		if (show) {
 			borderContent.addComponent(lBasePath, BorderContent.WEST);
 		} else {
 			borderContent.removeComponent(lBasePath);
 		}
-		
+
 	}
-	
+
 	/**
-	 * Sets the max width of the base path text label, either in pixel or 
+	 * Sets the max width of the base path text label, either in pixel or
 	 * as percentage of the whole path text field.
 	 * 
 	 * @param width
@@ -284,18 +288,18 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		if (width <= 0) {
 			throw new GuiUtilError("Base path max width should be > 0");
 		}
-		
+
 		if (percentageOfField) {
 			basePathPercentage = width;
 		} else {
 			basePathPercentage = 0;
 			lBasePath.setMaximumSize(new Dimension(width, (int)lBasePath.getMaximumSize().getHeight()));
 		}
-		
+
 	}
-	
+
 	/**
-	 * Returns true if the entered path is invalid, and false if the path is 
+	 * Returns true if the entered path is invalid, and false if the path is
 	 * not valid.
 	 * 
 	 * @return
@@ -303,7 +307,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public boolean isPathValid() {
 		return !currentIcon.equals(iInvalid);
 	}
-	
+
 	/**
 	 * 
 	 * @param allow
@@ -311,7 +315,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void allowDirectory(boolean allow) {
 		this.allowDirectory = allow;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -319,7 +323,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public boolean allowDirectory() {
 		return this.allowDirectory;
 	}
-	
+
 	/**
 	 * 
 	 * @param allow
@@ -327,7 +331,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void allowFile(boolean allow) {
 		this.allowFile = allow;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -335,7 +339,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public boolean allowFile() {
 		return this.allowFile;
 	}
-	
+
 	/**
 	 * 
 	 * @param allow
@@ -343,7 +347,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void allowNew(boolean allow) {
 		this.allowNew = allow;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -351,7 +355,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public boolean allowNew() {
 		return this.allowNew;
 	}
-	
+
 	/**
 	 * Adds an action listener to the button
 	 * 
@@ -360,7 +364,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void addButtonActionListener(ActionListener l) {
 		bIcon.addActionListener(l);
 	}
-	
+
 	/**
 	 * Removes the action listener from the button
 	 * 
@@ -369,7 +373,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void removeButtonActionListener(ActionListener l) {
 		bIcon.removeActionListener(l);
 	}
-	
+
 	/**
 	 * Enable/disable the button
 	 * 
@@ -378,7 +382,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void setButtonEnabled(boolean b) {
 		bIcon.setEnabled(b);
 	}
-	
+
 	/**
 	 * Show/hide the button
 	 * 
@@ -387,19 +391,19 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	public void setButtonVisible(boolean b) {
 		bIcon.setVisible(b);
 	}
-	
+
 	/**
-	 * Returns the entered path including the base path. If the entered path is 
-	 * a relative path (not starting with a path separator), then the working 
+	 * Returns the entered path including the base path. If the entered path is
+	 * a relative path (not starting with a path separator), then the working
 	 * directory is added in front of the path.
 	 * 
 	 * @return
 	 */
 	public String getWholePath() {
-		//Set the base path to the working directory if the entered path is 
+		//Set the base path to the working directory if the entered path is
 		//relative
 		if (!isInfoShown()) {
-			if ((basePath == null || basePath.length() == 0) 
+			if ((basePath == null || basePath.length() == 0)
 					&& getText().length() > 0 && !FileUtil.hasFileSystemRoot(getText())) {
 				return FileUtil.getWorkingDirectory() + getText();
 			} else {
@@ -408,20 +412,20 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		} else {
 			return basePath;
 		}
-		
+
 	}
-	
+
 	/**
-	 * Since the action listener is attached to the internal browse button, the 
-	 * source of the actionPerformed event will be that button. This method can 
+	 * Since the action listener is attached to the internal browse button, the
+	 * source of the actionPerformed event will be that button. This method can
 	 * be used to test if the actionPerformed source is from this text field.
 	 * 
 	 * @return
 	 */
 	public boolean isActionListenerSource(Object source) {
-		return (source.equals(bIcon));
+		return source.equals(bIcon);
 	}
-	
+
 	/**
 	 * Checks the path and shows the info icon according to the status of the path
 	 */
@@ -434,16 +438,16 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		} else {
 			borderImage.showAll(false);
 		}
-		
+
 		currentIcon = iInit;
-		
+
 		if (path == null || path.length() == 0) {
 			return;
 		}
-		
+
 		File f = new File(path);
 		String toolTip = "";
-		
+
 		if (f.isDirectory()) {
 			//-- EXISTING DIRECTORY --
 			if (allowDirectory) {
@@ -487,8 +491,8 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 			} else {
 				//-- NEW FILE/DIRECTORY --
 				if (!allowNewDirectory) {
-					//Check the current path and the parent path, because the last 
-					//path piece could be a file or a directory -> if it is a file 
+					//Check the current path and the parent path, because the last
+					//path piece could be a file or a directory -> if it is a file
 					//its parent has to be checked to be an existing directory.
 					//=> the current path has already been checked with f.isDirectory()
 					File parent = FileUtil.getParentFile(f);
@@ -500,7 +504,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 						}
 					}
 				}
-				
+
 				//Only continue if the path is not already set to invalid
 				if (currentIcon != iInvalid) {
 					if (allowNew) {
@@ -528,35 +532,35 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 						currentIcon = iInvalid;
 					}
 				}
-				
+
 			}
-			
-			
+
+
 		}
-		
+
 		//Show in the tool tip message if it is a relative path
 		if ((basePath == null || basePath.length() == 0) && !FileUtil.hasFileSystemRoot(getText())) {
 			toolTip += " relative to: " + FileUtil.getWorkingDirectory();
 		}
-		
+
 		borderImage.setToolTip(currentIcon.getImage(), toolTip);
 		borderImage.show(currentIcon.getImage(), true);
-		
+
 		//Repaint to make sure the icon gets updated
 		repaint();
 	}
-	
+
 	/**
 	 * 
 	 */
 	private void updateBasePathField() {
 		if (basePathPercentage > 0) {
-			int width = ((int)getSize().getWidth() / 100) * basePathPercentage;
-			
+			int width = (int)getSize().getWidth() / 100 * basePathPercentage;
+
 			lBasePath.setMaximumSize(new Dimension(width, (int)lBasePath.getMaximumSize().getHeight()));
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -564,48 +568,48 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 		if (pathWatcher != null) {
 			pathWatcher.pause(false);
 			pathWatcher.clearAllRegisteredPaths();
-			
-			//Always watch the working directory, because the entered path could 
+
+			//Always watch the working directory, because the entered path could
 			//be a relative path
 			pathWatcher.registerPath(FileUtil.getWorkingDirectory(), false, true);
-			
+
 			pathWatcher.registerPath(getWholePath(), false, true);
 		}
 	}
-	
+
 	@Override
 	public void setText(String t) {
 		super.setText(t);
-		
+
 		if (initOk) {
 			updatePathWatcher();
 			checkPath();
 		}
 	}
-	
+
 	@Override
 	public void paintChildren(Graphics g) {
 		super.paintChildren(g);
 		borderImage.paintImages(g);
-		
-//		if (pathWatcher != null) {
-//			g.setColor(Color.orange);
-//			g.drawRect(0, (int)getBounds().getHeight() - 3, 2, 2);
-//		}
-		
+
+		//		if (pathWatcher != null) {
+		//			g.setColor(Color.orange);
+		//			g.drawRect(0, (int)getBounds().getHeight() - 3, 2, 2);
+		//		}
+
 	}
-	
-	
+
+
 	@Override
 	public void changedUpdate(DocumentEvent e) {
 		checkPath();
 	}
-	
+
 	@Override
 	public void insertUpdate(DocumentEvent e) {
 		checkPath();
 	}
-	
+
 	@Override
 	public void removeUpdate(DocumentEvent e) {
 		checkPath();
@@ -640,23 +644,27 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	@Override
 	public void componentShown(ComponentEvent e) {
 	}
-	
+
 	@Override
 	public void focusGained(FocusEvent e) {
 		super.focusGained(e);
-		
+
 		if (pathWatcher != null) {
 			pathWatcher.pause(true);
 		}
-		
+
 		checkPath();
 	}
-	
+
 	@Override
 	public void focusLost(FocusEvent e) {
 		super.focusLost(e);
 		updatePathWatcher();
 		checkPath();
+	}
+
+	@Override
+	public void newPathWatched(Path path) {
 	}
 
 	@Override
@@ -667,7 +675,7 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	@Override
 	public void directoryCreated(Path path, Path created) {
 		Path p = Paths.get(getWholePath());
-		
+
 		//If the created path is within the current path, then register it
 		if (p.startsWith(created)) {
 			pathWatcher.registerPath(created.toString(), false, false);
@@ -681,6 +689,6 @@ public class PathTextField extends InfoTextTextField implements DocumentListener
 	@Override
 	public void directoryModified(Path path, Path modified) {
 	}
-	
-	
+
+
 }
