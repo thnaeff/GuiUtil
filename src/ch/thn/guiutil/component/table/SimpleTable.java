@@ -17,6 +17,7 @@
 package ch.thn.guiutil.component.table;
 
 import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -39,7 +40,7 @@ public class SimpleTable extends JTable {
 	 * 
 	 * @param columns
 	 */
-	public SimpleTable(SimpleTableModel model) {
+	public SimpleTable(AbstractTableModel model) {
 		super(model);
 
 		setModel(model);

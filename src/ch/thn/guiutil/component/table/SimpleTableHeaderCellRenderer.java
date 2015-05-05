@@ -29,6 +29,7 @@ import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.UIManager;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 /**
@@ -43,11 +44,11 @@ import javax.swing.table.TableCellRenderer;
 public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
 
 
-	private SimpleTableModel tableModel = null;
+	private AbstractTableModel tableModel = null;
 
 
 
-	public SimpleTableHeaderCellRenderer(SimpleTableModel tableModel) {
+	public SimpleTableHeaderCellRenderer(AbstractTableModel tableModel) {
 		this.tableModel = tableModel;
 
 	}
@@ -70,7 +71,14 @@ public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 
-		Object o = tableModel.getColumn(table.convertColumnIndexToModel(column)).getColumnTitle();
+		Object o = null;
+
+		if (tableModel instanceof SimpleTableModel) {
+			o = ((SimpleTableModel)tableModel).getColumn(table.convertColumnIndexToModel(column)).getColumnTitle();
+		} else {
+			o = tableModel.getColumnName(table.convertColumnIndexToModel(column));
+		}
+
 		JComponent c = null;
 
 		if (o instanceof JComponent) {
