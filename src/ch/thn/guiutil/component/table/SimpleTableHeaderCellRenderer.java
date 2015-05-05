@@ -35,21 +35,21 @@ import javax.swing.table.TableCellRenderer;
  * 
  * 
  * Code idea from: http://tips4java.wordpress.com/2009/02/27/default-table-header-cell-renderer/<br>
- * Modified so that any component can be set as column title 
+ * Modified so that any component can be set as column title
  * 
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
 public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
-	
-	
+
+
 	private SimpleTableModel tableModel = null;
-	
-	
-	
-	public SimpleTableHeaderCellRenderer(SimpleTableModel tableModel) {	
+
+
+
+	public SimpleTableHeaderCellRenderer(SimpleTableModel tableModel) {
 		this.tableModel = tableModel;
-		
+
 	}
 
 	/**
@@ -69,24 +69,24 @@ public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
-		
-		Object o = tableModel.getColumn(column).getColumnTitle();
+
+		Object o = tableModel.getColumn(table.convertColumnIndexToModel(column)).getColumnTitle();
 		JComponent c = null;
-		
+
 		if (o instanceof JComponent) {
 			c = (JComponent)o;
-			
+
 		} else {
 			c = new JLabel(o.toString());
 		}
-		
+
 		c.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
 		c.setFont(c.getFont().deriveFont(Font.BOLD));
-		
+
 		JPanel p = new JPanel(new BorderLayout());
 		p.add(new JLabel(getIcon(table, column)), BorderLayout.EAST);
 		p.add(c, BorderLayout.CENTER);
-		
+
 		return p;
 	}
 
