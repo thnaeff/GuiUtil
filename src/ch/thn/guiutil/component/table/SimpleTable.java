@@ -22,6 +22,10 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 /**
+ * A {@link JTable} with additional functionality. This table takes a
+ * {@link SimpleTableModel} which is used to set up the table.
+ * 
+ * 
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
@@ -100,7 +104,6 @@ public class SimpleTable extends JTable {
 
 			if (value != null && tableModel.getColumn(modelColumn).hasEditor(value.getClass())) {
 				//Return a column specific renderer
-				System.out.println(value.getClass());
 				return tableModel.getColumn(modelColumn).getEditor(value.getClass());
 			}
 

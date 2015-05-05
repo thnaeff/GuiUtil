@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableCellRenderer;
 
 import ch.thn.guiutil.component.table.SimpleTable;
 import ch.thn.guiutil.component.table.SimpleTableColumn;
@@ -85,6 +86,7 @@ public class SimpleTableTest extends JPanel implements TableModelListener {
 		SimpleTableModel tm = new SimpleTableModel(cols);
 
 		SimpleTable st = new SimpleTable(tm);
+
 		st.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
 		st.setShowVerticalLines(false);
 		st.setIntercellSpacing(new Dimension(0, 1));
@@ -129,6 +131,12 @@ public class SimpleTableTest extends JPanel implements TableModelListener {
 		//		tm.addRow("Value1", new Boolean(true));
 		//
 		//		tm.addRows(2);
+
+		//Want to color a entire row? get all renderers for a row and use them...
+		for (int i = 0; i < tm.getColumnCount(); i++) {
+			TableCellRenderer r = st.getCellRenderer(1, i);
+			//...
+		}
 
 
 		add(new JScrollPane(st), BorderLayout.CENTER);

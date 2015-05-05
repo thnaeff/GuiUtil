@@ -25,8 +25,14 @@ import javax.swing.table.TableCellRenderer;
 /**
  * When setting up a table, it is defined per column how data has to be displayed
  * (with a table cell renderer) and how data has to be edited (with a table cell editor).
- * 
- * 
+ * This column class is used to do these configurations for a column.<br />
+ * <br />
+ * <br />
+ * In addition, this table column implementation offers the functionality to define multiple
+ * renderers and editors, one for each value class type (e.g. all strings
+ * should use a certain editor, whereas all boolean values should use another one).
+ * This allows for different data types in one table column (which is against the
+ * regular table implementation where each column has one data type).
  * 
  * 
  * @author Thomas Naeff (github.com/thnaeff)

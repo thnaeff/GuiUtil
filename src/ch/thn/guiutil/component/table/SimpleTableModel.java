@@ -18,12 +18,13 @@ package ch.thn.guiutil.component.table;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
 /**
- * 
+ * The table model holds the data and the column definitions of a table.
  * 
  * 
  * @author Thomas Naeff (github.com/thnaeff)
@@ -564,10 +565,20 @@ public class SimpleTableModel extends AbstractTableModel implements SimpleTableC
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (data.get(rowIndex) == null) {
-			System.err.println("row " + rowIndex + " does not exist");
-			return null;
+			throw new IndexOutOfBoundsException("Row " + rowIndex + " does not exist");
 		}
+
 		return data.get(rowIndex).get(columnIndex);
+	}
+
+	/**
+	 * Returns the values for a entire row
+	 * 
+	 * @param rowIndex
+	 * @return
+	 */
+	public List<Object> getValues(int rowIndex) {
+		return data.get(rowIndex);
 	}
 
 	@Override
