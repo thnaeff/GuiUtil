@@ -17,12 +17,10 @@
 package ch.thn.guiutil.component.table;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -88,11 +86,9 @@ public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
 			c = (JComponent)o;
 		} else {
 			c = new JLabel(o.toString());
+			c.setFont(c.getFont().deriveFont(Font.BOLD));
 			c.setToolTipText(o.toString());
 		}
-
-		c.setFont(c.getFont().deriveFont(Font.BOLD));
-		c.setBorder(BorderFactory.createLineBorder(Color.red));
 
 		JPanel p = new JPanel(new BorderLayout());
 		p.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
