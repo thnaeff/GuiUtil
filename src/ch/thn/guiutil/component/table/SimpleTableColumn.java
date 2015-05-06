@@ -54,8 +54,6 @@ public class SimpleTableColumn {
 	private Object columnTitle = null;
 	private Object defaultValue = null;
 
-	private String columnTitleToolTip = null;
-
 	private boolean editable = false;
 
 	private int minWidth = 0;
@@ -260,21 +258,6 @@ public class SimpleTableColumn {
 	 */
 	public void setColumnTitle(Object columnTitle) {
 		this.columnTitle = columnTitle;
-		fireColumnChanged();
-	}
-
-	/**
-	 * @return the columnTitleToolTip
-	 */
-	public String getColumnTitleToolTip() {
-		return columnTitleToolTip;
-	}
-
-	/**
-	 * @param columnTitleToolTip the columnTitleToolTip to set
-	 */
-	public void setColumnTitleToolTip(String columnTitleToolTip) {
-		this.columnTitleToolTip = columnTitleToolTip;
 		fireColumnChanged();
 	}
 

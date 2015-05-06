@@ -17,10 +17,12 @@
 package ch.thn.guiutil.component.table;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -74,6 +76,7 @@ public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
 		Object o = null;
 
 		if (tableModel instanceof SimpleTableModel) {
+			//Any component can be set as title when using the SimpleTableModel
 			o = ((SimpleTableModel)tableModel).getColumn(table.convertColumnIndexToModel(column)).getColumnTitle();
 		} else {
 			o = tableModel.getColumnName(table.convertColumnIndexToModel(column));
@@ -83,16 +86,24 @@ public class SimpleTableHeaderCellRenderer implements TableCellRenderer {
 
 		if (o instanceof JComponent) {
 			c = (JComponent)o;
-
 		} else {
 			c = new JLabel(o.toString());
+			c.setToolTipText(o.toString());
 		}
 
-		c.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
 		c.setFont(c.getFont().deriveFont(Font.BOLD));
+		c.setBorder(BorderFactory.createLineBorder(Color.red));
 
 		JPanel p = new JPanel(new BorderLayout());
+		p.setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+
+		//Set the tool tip text to the panel because somehow it does not show the
+		//tool tip of the component
+		p.setToolTipText(c.getToolTipText());
+
+		//Sorting icon
 		p.add(new JLabel(getIcon(table, column)), BorderLayout.EAST);
+		//Header component
 		p.add(c, BorderLayout.CENTER);
 
 		return p;
