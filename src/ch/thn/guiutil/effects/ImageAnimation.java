@@ -29,8 +29,9 @@ import ch.thn.util.valuerange.ImageAlphaGradient;
 
 
 /**
- * A class to create a simple image animation, using multiple images, gradients
- * and animation speeds.
+ * Automated image fading which uses the {@link ImageFading} class and automatically
+ * performs the fading steps. Multiple images, gradients and animation speeds can
+ * be added after each other.
  * 
  * 
  * @author Thomas Naeff (github.com/thnaeff)
@@ -38,16 +39,15 @@ import ch.thn.util.valuerange.ImageAlphaGradient;
  */
 public class ImageAnimation extends ControlledRunnable {
 
-	private LinkedList<ImageFading> images = null;
-	private LinkedList<Double> timeouts = null;
+	private LinkedList<AnimationStep> animationSteps = null;
 
 	private BufferedImage imageOut = null;
 
-	private Component componentToRepainting = null;
+	private Component componentToRepaint = null;
 
 	private Rectangle repaintArea = null;
 
-	private int index = 0;
+	private int animationIndex = 0;
 	private int loop = 0;
 	private int loops = 0;
 
@@ -112,11 +112,10 @@ public class ImageAnimation extends ControlledRunnable {
 	 */
 	private void init(Component componentToRepaint, Rectangle repaintArea,
 			BufferedImage imageOut, int width, int height) {
-		this.componentToRepainting = componentToRepaint;
+		this.componentToRepaint = componentToRepaint;
 		this.repaintArea = repaintArea;
 
-		images = new LinkedList<ImageFading>();
-		timeouts = new LinkedList<Double>();
+		animationSteps = new LinkedList<>();
 
 		if (imageOut == null) {
 			this.imageOut = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -136,8 +135,8 @@ public class ImageAnimation extends ControlledRunnable {
 		this.imageOut = imageOut;
 
 		//Update all existing images
-		for (ImageFading imageFading : images) {
-			imageFading.setFadingImage(imageOut);
+		for (AnimationStep animationStep : animationSteps) {
+			animationStep.imageFading.setFadingImage(imageOut);
 		}
 	}
 
@@ -167,8 +166,7 @@ public class ImageAnimation extends ControlledRunnable {
 	 * Removes all the images which have been added to this animation
 	 */
 	public void removeAll() {
-		images.clear();
-		timeouts.clear();
+		animationSteps.clear();
 	}
 
 	/**
@@ -182,10 +180,9 @@ public class ImageAnimation extends ControlledRunnable {
 	 * @param timeout
 	 */
 	public void addStep(Image image1, Image image2, ImageAlphaGradient gradient1,
-			ImageAlphaGradient gradient2, double timeout) {
+			ImageAlphaGradient gradient2, long timeout) {
 
-		images.add(new ImageFading(imageOut, image1, image2, gradient1, gradient2));
-		timeouts.add(timeout);
+		animationSteps.add(new AnimationStep(new ImageFading(imageOut, image1, image2, gradient1, gradient2), timeout));
 	}
 
 	/**
@@ -196,9 +193,8 @@ public class ImageAnimation extends ControlledRunnable {
 	 * @param gradient
 	 * @param timeout
 	 */
-	public void addStep(Image image, ImageAlphaGradient gradient, double timeout) {
-		images.add(new ImageFading(imageOut, image, null, gradient, null));
-		timeouts.add(timeout);
+	public void addStep(Image image, ImageAlphaGradient gradient, long timeout) {
+		animationSteps.add(new AnimationStep(new ImageFading(imageOut, image, null, gradient, null), timeout));
 	}
 
 	/**
@@ -208,8 +204,8 @@ public class ImageAnimation extends ControlledRunnable {
 	public void reset() {
 		super.reset();
 
-		for (ImageFading imageFading : images) {
-			imageFading.reset();
+		for (AnimationStep animationStep : animationSteps) {
+			animationStep.imageFading.reset();
 		}
 
 	}
@@ -256,8 +252,11 @@ public class ImageAnimation extends ControlledRunnable {
 	public void run() {
 		runStart();
 
+		ImageFading imageFading = null;
+
 		//Main loop. Keeping the thread running
 		while (!isStopRequested()) {
+
 			//Only end this pause when pause(false) is called
 			runReset();
 			runPause(false);
@@ -270,9 +269,9 @@ public class ImageAnimation extends ControlledRunnable {
 
 			//Number of animation repeats
 			while (loop < loops || loops == 0) {
-				index = 0;
+				animationIndex = 0;
 
-				if (images.size() == 0) {
+				if (animationSteps.size() == 0) {
 					pause(true);
 					break;
 				}
@@ -295,30 +294,31 @@ public class ImageAnimation extends ControlledRunnable {
 						break;
 					}
 
-					if (!images.get(index).fade()) {
-						//Fading of the current image is done
-						index++;
+					AnimationStep animationStep = animationSteps.get(animationIndex);
+					imageFading = animationStep.imageFading;
+					imageFading.fade();
 
-						//All images are done
-						if (index >= images.size()) {
+					if (repaintArea != null) {
+						componentToRepaint.repaint((int)repaintArea.getX(), (int)repaintArea.getY(),
+								(int)repaintArea.getWidth(), (int)repaintArea.getHeight());
+					} else {
+						componentToRepaint.repaint();
+					}
+
+					if (imageFading.isDone()) {
+						imageFading.reset();
+
+						//Fading of the current image is done -> next image
+						animationIndex++;
+
+						//All images are done -> next loop
+						if (animationIndex >= animationSteps.size()) {
 							loop++;
 							break;
 						}
 					}
 
-					if (repaintArea != null) {
-						componentToRepainting.repaint((int)repaintArea.getX(), (int)repaintArea.getY(),
-								(int)repaintArea.getWidth(), (int)repaintArea.getHeight());
-					} else {
-						componentToRepainting.repaint();
-					}
-
-
-					synchronized (this) {
-						try {
-							wait(timeouts.get(index).longValue());
-						} catch (InterruptedException e) {}
-					}
+					controlledPause(animationStep.timeout);
 				}
 
 
@@ -334,8 +334,40 @@ public class ImageAnimation extends ControlledRunnable {
 
 		}
 
-
 		runEnd();
+	}
+
+
+
+	/**************************************************************************
+	 * 
+	 * 
+	 * 
+	 *
+	 * @author Thomas Naeff (github.com/thnaeff)
+	 *
+	 */
+	private class AnimationStep {
+
+		protected ImageFading imageFading = null;
+		protected long timeout = 0;
+
+
+		/**
+		 * 
+		 * 
+		 * @param imageFading
+		 * @param timeout
+		 */
+		public AnimationStep(ImageFading imageFading, long timeout) {
+			this.imageFading = imageFading;
+			this.timeout = timeout;
+
+
+		}
+
+
+
 	}
 
 
