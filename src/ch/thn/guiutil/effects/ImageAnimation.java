@@ -104,11 +104,11 @@ public class ImageAnimation extends ControlledRunnable {
 
 	/**
 	 * 
-	 * @param componentToRepaint
-	 * @param repaintArea
+	 * @param componentToRepaint The component on which the image is being drawn
+	 * @param repaintArea The area which should be updated after painting a new image
 	 * @param imageOut The image where the animations should be drawn on
-	 * @param width
-	 * @param height
+	 * @param width The size of the image. Only needed if imageOut=<code>null</code>
+	 * @param height The size of the image. Only needed if imageOut=<code>null</code>
 	 */
 	private void init(Component componentToRepaint, Rectangle repaintArea,
 			BufferedImage imageOut, int width, int height) {
@@ -206,7 +206,7 @@ public class ImageAnimation extends ControlledRunnable {
 	}
 
 	/**
-	 * Starts the fading and repeats it with the given number of loops. If
+	 * Starts the animation and repeats it with the given number of loops. If
 	 * stopWhenDone=true, this animation thread will be ended when the animation
 	 * is done.
 	 * 
@@ -214,7 +214,7 @@ public class ImageAnimation extends ControlledRunnable {
 	 * @param stopWhenDone Stops the thread when animation is done. After the
 	 * animation is done, the thread can not be used any more.
 	 */
-	public void fade(int loops, boolean stopWhenDone) {
+	public void animate(int loops, boolean stopWhenDone) {
 		this.loops = loops;
 		this.stopWhenDone = stopWhenDone;
 
@@ -223,24 +223,24 @@ public class ImageAnimation extends ControlledRunnable {
 	}
 
 	/**
-	 * Starts the fading and repeats it with the given number of loops. After the
+	 * Starts the animation and repeats it with the given number of loops. After the
 	 * animation is done, the animation thread is paused and can be started again
 	 * by calling one of the fade methods.<br>
 	 * Set loops=0 for infinite number of loops.
 	 * 
 	 * @param loops The number of repeats of all the animation steps
 	 */
-	public void fade(int loops) {
-		fade(loops, false);
+	public void animate(int loops) {
+		animate(loops, false);
 	}
 
 	/**
-	 * Starts the fading and runs all animation steps one single time. After the
+	 * Starts the animation and runs all animation steps one single time. After the
 	 * animation is done, the animation thread is paused and can be started again
 	 * by calling one of the fade methods.
 	 */
-	public void fade() {
-		fade(1, false);
+	public void animate() {
+		animate(1, false);
 	}
 
 	/**
