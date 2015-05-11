@@ -31,7 +31,8 @@ import ch.thn.util.valuerange.ImageAlphaGradient;
 /**
  * Automated image fading which uses the {@link ImageFading} class and automatically
  * performs the fading steps. Multiple images, gradients and animation speeds can
- * be added after each other.
+ * be added after each other. It can be defined for each step how many times the
+ * step should be repeated.
  * 
  * 
  * @author Thomas Naeff (github.com/thnaeff)
@@ -47,7 +48,7 @@ public class ImageAnimation extends ControlledRunnable {
 
 	private Rectangle repaintArea = null;
 
-	private int loops = 0;
+	private volatile int loops = 0;
 
 	private boolean stopWhenDone = false;
 	private volatile boolean isAnimating = false;
@@ -118,7 +119,11 @@ public class ImageAnimation extends ControlledRunnable {
 		animationSteps = new LinkedList<>();
 
 		if (imageOut == null) {
-			this.imageOut = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			//If no width and height are given, the buffered image has to be set
+			//manually wit the setAnimatedImage method
+			if (width != 0 || height != 0) {
+				this.imageOut = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			}
 		} else {
 			this.imageOut = imageOut;
 		}
@@ -138,6 +143,21 @@ public class ImageAnimation extends ControlledRunnable {
 	}
 
 	/**
+	 * Sets the given image as image to draw on
+	 * 
+	 * @param image
+	 */
+	public void setAnimatedImage(BufferedImage image) {
+		this.imageOut = image;
+
+		//Set the new image also for all the already defined steps
+		for (AnimationStep animationStep : animationSteps) {
+			animationStep.imageFading.setFadingImage(image);
+		}
+
+	}
+
+	/**
 	 * Set a specific area (the area within which the image is being drawn) which
 	 * needs to be updated after drawing a new image. If set to null, the whole
 	 * component is updated.
@@ -149,13 +169,6 @@ public class ImageAnimation extends ControlledRunnable {
 	}
 
 	/**
-	 * Removes all the images which have been added to this animation
-	 */
-	public void removeAll() {
-		animationSteps.clear();
-	}
-
-	/**
 	 * Adds a new step to the animation. This step fades from one image to the other
 	 * using the given gradients.
 	 * 
@@ -164,14 +177,19 @@ public class ImageAnimation extends ControlledRunnable {
 	 * @param gradient1 The gradient for the first image
 	 * @param gradient2 The gradient for the second image
 	 * @param timeout The timeout between each image gradient step (determines
-	 * the speed of the fading)
+	 * the speed of the animation)
 	 * @param delay The delay for the animation to start
+	 * @param repeat The number of times this animation step should be repeated.
+	 * A repeat of 1 means the step will be animated twice (once plus 1 repeat).
+	 * @return The step index
 	 */
-	public void addStep(Image image1, Image image2, ImageAlphaGradient gradient1,
-			ImageAlphaGradient gradient2, long timeout, long delay) {
+	public int addStep(Image image1, Image image2, ImageAlphaGradient gradient1,
+			ImageAlphaGradient gradient2, long timeout, long delay, int repeat) {
 
 		animationSteps.add(new AnimationStep(new ImageFading(imageOut, image1, image2, gradient1, gradient2),
-				timeout, delay));
+				timeout, delay, repeat));
+
+		return animationSteps.size() - 1;
 	}
 
 	/**
@@ -181,12 +199,33 @@ public class ImageAnimation extends ControlledRunnable {
 	 * @param image
 	 * @param gradient The gradient for the image
 	 * @param timeout The timeout between each image gradient step (determines
-	 * the speed of the fading)
+	 * the speed of the animation)
 	 * @param delay The delay for the animation to start
+	 * @param repeat The number of times this animation step should be repeated.
+	 * A repeat of 1 means the step will be animated twice (once plus 1 repeat).
+	 * @return The step index
 	 */
-	public void addStep(Image image, ImageAlphaGradient gradient, long timeout, long delay) {
+	public int addStep(Image image, ImageAlphaGradient gradient, long timeout, long delay, int repeat) {
 		animationSteps.add(new AnimationStep(new ImageFading(imageOut, image, null, gradient, null),
-				timeout, delay));
+				timeout, delay, repeat));
+
+		return animationSteps.size() - 1;
+	}
+
+	/**
+	 * Clears all animation steps
+	 * 
+	 */
+	public void clearSteps() {
+		animationSteps.clear();
+	}
+
+	/**
+	 * The number of animation steps
+	 * 
+	 */
+	public int stepCount() {
+		return animationSteps.size();
 	}
 
 	/**
@@ -195,14 +234,19 @@ public class ImageAnimation extends ControlledRunnable {
 	@Override
 	public void reset() {
 		super.reset();
+		clear();
+	}
 
+	/**
+	 * Clears the image
+	 */
+	private void clear() {
 		//Since all the animation steps use the same buffered image, only one
 		//has to be cleared
 		if (animationSteps.size() > 0) {
 			animationSteps.get(0).imageFading.clear();
 			repaintComponentOrArea();
 		}
-
 	}
 
 	/**
@@ -218,7 +262,7 @@ public class ImageAnimation extends ControlledRunnable {
 		this.loops = loops;
 		this.stopWhenDone = stopWhenDone;
 
-		reset();
+		clear();
 		pause(false);
 	}
 
@@ -259,7 +303,6 @@ public class ImageAnimation extends ControlledRunnable {
 
 		//Main loop. Keeping the thread running
 		while (!isStopRequested()) {
-			System.out.println("start");
 			runReset();
 			runPause(false);
 
@@ -269,7 +312,7 @@ public class ImageAnimation extends ControlledRunnable {
 
 			int currentLoop = 0;
 
-			//Number of animation repeats. Zero loops means infinite repeats.
+			//Animation repeats. Zero loops means infinite repeats.
 			while ((currentLoop < loops || loops == 0)
 					&& !isResetRequested() && !isStopRequested()) {
 
@@ -281,38 +324,50 @@ public class ImageAnimation extends ControlledRunnable {
 						&& !isResetRequested() && !isStopRequested();
 						animationIndex++) {
 
+
 					AnimationStep animationStep = animationSteps.get(animationIndex);
 					ImageFading imageFading = animationStep.imageFading;
-					imageFading.reset();
 
-					if (animationStep.delay > 0) {
-						controlledPause(animationStep.delay);
-					}
+					//Step repeats
+					for (int stepRepeat = 0;
+							stepRepeat <= animationStep.repeat
+									&& !isResetRequested() && !isStopRequested();
+							stepRepeat++) {
 
-					//Fading
-					while (!imageFading.isDone()
-							&& !isResetRequested()
-							&& !isStopRequested()) {
+						imageFading.reset();
 
-						if (isPauseRequested()) {
-							isAnimating = false;
-							runPause(true);
-							isAnimating = true;
+						if (animationStep.delay > 0) {
+							controlledPause(animationStep.delay);
 						}
 
-						imageFading.fade();
+						//Fading
+						while (!imageFading.isDone()
+								&& !isResetRequested()
+								&& !isStopRequested()) {
 
-						repaintComponentOrArea();
+							if (isPauseRequested()) {
+								isAnimating = false;
+								runPause(true);
+								isAnimating = true;
+							}
 
-						controlledPause(animationStep.timeout);
+							imageFading.fade();
 
-					}
+							repaintComponentOrArea();
 
-				}
+							controlledPause(animationStep.timeout);
+
+						}	//End fading
+
+					}	//End step repeats
+
+				}	//End each animation
 
 
 				currentLoop++;
-			}
+
+			}	// End animation repeats
+
 
 			isAnimating = false;
 
@@ -323,7 +378,7 @@ public class ImageAnimation extends ControlledRunnable {
 
 			pause(true);
 
-		}
+		}	// End thread main loop
 
 		runEnd();
 	}
@@ -360,6 +415,7 @@ public class ImageAnimation extends ControlledRunnable {
 		protected ImageFading imageFading = null;
 		protected long timeout = 0;
 		protected long delay = 0;
+		protected long repeat = 0;
 
 
 		/**
@@ -369,10 +425,11 @@ public class ImageAnimation extends ControlledRunnable {
 		 * @param timeout
 		 * @param delay
 		 */
-		public AnimationStep(ImageFading imageFading, long timeout, long delay) {
+		public AnimationStep(ImageFading imageFading, long timeout, long delay, int repeat) {
 			this.imageFading = imageFading;
 			this.timeout = timeout;
 			this.delay = delay;
+			this.repeat = repeat;
 
 		}
 
