@@ -22,9 +22,6 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import ch.thn.guiutil.component.ClippingLabel;
-import ch.thn.guiutil.component.CollapsiblePane;
-
 
 /**
  * @author Thomas Naeff (github.com/thnaeff)
@@ -36,38 +33,38 @@ public class GuiUtilTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
 		JFrame f = new JFrame("GuiUtilTest");
-		
+
 		JPanel p = new JPanel(new BorderLayout());
-		
-		
-//		p.add(new BorderContentTextFieldTest(), BorderLayout.EAST);		
-		p.add(new PathTextFieldTest(f.getLayeredPane()), BorderLayout.NORTH);
-		
+
+
+		//		p.add(new BorderContentTextFieldTest(), BorderLayout.EAST);
+		//		p.add(new PathTextFieldTest(f.getLayeredPane()), BorderLayout.NORTH);
+
 		p.add(new EffectsTest(), BorderLayout.SOUTH);
-		
-		p.add(new SimpleTableTest(), BorderLayout.CENTER);
-		
-//		p.add(new LabelledComponentPaneTest(), BorderLayout.CENTER);
-		
-//		p.add(new ClippingLabel("asdf löaksfdl aösdlf köals jfö sfas dasfdas fdasdfasdf asdfasdfaslaks fölaks fla jdsölasd fasd fsd"));
-		
-//		p.add(new DisplayTreeTest());
-		
-//		p.add(new CollapsiblePaneTest());
-		
-//		p.add(new MessageDetailsPanelTest());
-		
-//		JComponentDebugger debugger = new JComponentDebugger(p);
-//		debugger.setLayeredPane(f.getLayeredPane());
-//		debugger.showInfoFrame(true);
-		
-		
+
+		//		p.add(new SimpleTableTest(), BorderLayout.CENTER);
+
+		//		p.add(new LabelledComponentPaneTest(), BorderLayout.CENTER);
+
+		//		p.add(new ClippingLabel("asdf löaksfdl aösdlf köals jfö sfas dasfdas fdasdfasdf asdfasdfaslaks fölaks fla jdsölasd fasd fsd"));
+
+		//		p.add(new DisplayTreeTest());
+
+		//		p.add(new CollapsiblePaneTest());
+
+		//		p.add(new MessageDetailsPanelTest());
+
+		//		JComponentDebugger debugger = new JComponentDebugger(p);
+		//		debugger.setLayeredPane(f.getLayeredPane());
+		//		debugger.showInfoFrame(true);
+
+
 		f.getContentPane().add(p);
-		
+
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setMinimumSize(new Dimension(500, 400));
+		f.setMinimumSize(new Dimension(700, 400));
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
 

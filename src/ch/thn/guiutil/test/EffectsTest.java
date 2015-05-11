@@ -18,35 +18,41 @@ package ch.thn.guiutil.test;
 
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import ch.thn.guiutil.Loader;
-import ch.thn.guiutil.component.FadingLabel;
-import ch.thn.guiutil.effects.FadingImage;
-import ch.thn.guiutil.effects.IconAnimation;
 import ch.thn.guiutil.effects.ImageAnimation;
 import ch.thn.util.thread.ControlledRunnable;
-import ch.thn.util.thread.ControlledRunnableEvent;
-import ch.thn.util.thread.ControlledRunnableListener;
+import ch.thn.util.thread.ControlledRunnable.ControlledRunnableEvent;
+import ch.thn.util.thread.ControlledRunnable.ControlledRunnableListener;
 import ch.thn.util.valuerange.ImageAlphaGradient;
 
 /**
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class EffectsTest extends JPanel implements ControlledRunnableListener {
+public class EffectsTest extends JPanel implements ControlledRunnableListener, ActionListener {
 	private static final long serialVersionUID = 8762214384151119341L;
 
 	private JLabel lIconAnimation = null;
 	private JLabel lImageAnimation = null;
 	private JLabel lFadingImage = null;
 
+	private JButton bPauseRun = null;
+	private JButton bStop = null;
+	private JButton bReset = null;
+
 	private BufferedImage image2 = null;
+
+	private ImageAnimation imageAnimation = null;
 
 
 	private static final ImageIcon[] icons = {
@@ -65,39 +71,54 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener {
 
 		setLayout(new FlowLayout());
 
-		lIconAnimation = new JLabel("Icon Animation: ");
+		bPauseRun = new JButton("Pause");
+		bPauseRun.addActionListener(this);
+
+		bStop = new JButton("Stop");
+		bStop.addActionListener(this);
+
+		bReset = new JButton("Reset");
+		bReset.addActionListener(this);
+
+		add(bStop);
+		add(bReset);
+		add(bPauseRun);
+
+		lIconAnimation = new JLabel("IconAnimationLabel: ");
 		lIconAnimation.setHorizontalTextPosition(SwingConstants.LEFT);
 
-		lImageAnimation = new JLabel("Image Animation:");
+		lImageAnimation = new JLabel("ImageAnimation:");
 		lImageAnimation.setHorizontalTextPosition(SwingConstants.LEFT);
 
-		lFadingImage = new JLabel("Fading Image:");
+		lFadingImage = new JLabel("FadingImage:");
 		lFadingImage.setHorizontalTextPosition(SwingConstants.LEFT);
 
 
 		// ================================
 
-		IconAnimation iconAnim = new IconAnimation(lIconAnimation, icons, 300);
-		iconAnim.addControlledRunnableListener(this);
-
-		Thread tIconAnim = new Thread(iconAnim);
-		tIconAnim.start();
-		iconAnim.animate(0, true);
+		//		IconAnimationLabel iconAnim = new IconAnimationLabel(lIconAnimation, icons, 300);
+		//		iconAnim.addControlledRunnableListener(this);
+		//
+		//		Thread tIconAnim = new Thread(iconAnim);
+		//		tIconAnim.start();
+		//		iconAnim.animate(0, true);
 
 
 		// ================================
 
-		ImageAlphaGradient simpleGradientOut = new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 20, 0, 0);
 		ImageAlphaGradient simpleGradientIn = new ImageAlphaGradient(ImageAlphaGradient.FADE_IN, 20, 0, 0);
+		ImageAlphaGradient simpleGradientOut = new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 20, 0, 0);
 
-		ImageAnimation imageAnimation = new ImageAnimation(this, 20, 20);
+		System.out.println(simpleGradientIn);
+		System.out.println(simpleGradientOut);
+
+		imageAnimation = new ImageAnimation(this, 20, 20);
 		imageAnimation.addControlledRunnableListener(this);
-		imageAnimation.addStep(icons[0].getImage(), icons[1].getImage(),
-				simpleGradientOut, simpleGradientIn, 100);
-		imageAnimation.addStep(icons[1].getImage(), icons[2].getImage(),
-				simpleGradientOut, simpleGradientIn, 100);
-		imageAnimation.addStep(icons[2].getImage(), icons[0].getImage(),
-				simpleGradientOut, simpleGradientIn, 100);
+
+		imageAnimation.addStep(icons[0].getImage(),
+				simpleGradientIn, 80, 2000);
+		imageAnimation.addStep(icons[0].getImage(),
+				simpleGradientOut, 80, 1000);
 
 
 		image2 = imageAnimation.getAnimatedImage();
@@ -107,40 +128,39 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener {
 		Thread tFading = new Thread(imageAnimation);
 		tFading.start();
 
-		imageAnimation.fade(5, false);
+		imageAnimation.fade(2, false);
 
 
 		// ================================
 
-		FadingImage fadingImage = new FadingImage(lFadingImage, 20, 20, 20, 100);
-
-		//		fadingImage.setImage(icons[0].getImage(), 0);
-
-		fadingImage.addImage(icons[0].getImage(), 0);
-		fadingImage.addImage(icons[4].getImage(), fadingImage.DELAY_ALL);
-		fadingImage.addImage(icons[5].getImage(), 40);
-		fadingImage.fade(2);
-
-		BufferedImage image3 = fadingImage.getAnimatedImage();
-		lFadingImage.setIcon(new ImageIcon(image3));
-
-
-		// ================================
-
-		FadingLabel fadingLabel = new FadingLabel("Fading label: ", 20, 100, FadingLabel.DELAY_NONE);
-		fadingLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-
-		fadingLabel.setIcon(icons[0]);
-		fadingLabel.setIcon(icons[1]);
-
+		//		FadingImage fadingImage = new FadingImage(lFadingImage, 20, 20, 20, 100);
+		//
+		//		//		fadingImage.setImage(icons[0].getImage(), 0);
+		//
+		//		fadingImage.addImage(icons[0].getImage(), 0);
+		//		fadingImage.addImage(icons[4].getImage(), fadingImage.DELAY_ALL);
+		//		fadingImage.addImage(icons[5].getImage(), 40);
+		//		fadingImage.fade(2);
+		//
+		//		BufferedImage image3 = fadingImage.getAnimatedImage();
+		//		lFadingImage.setIcon(new ImageIcon(image3));
 
 
 		// ================================
 
-		add(lIconAnimation);
+		//		FadingLabel fadingLabel = new FadingLabel("FadingLabel: ", 20, 100, FadingLabel.DELAY_NONE);
+		//		fadingLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+		//
+		//		fadingLabel.setIcon(icons[0]);
+
+
+
+		// ================================
+
+		//		add(lIconAnimation);
 		add(lImageAnimation);
-		add(lFadingImage);
-		add(fadingLabel);
+		//		add(lFadingImage);
+		//		add(fadingLabel);
 	}
 
 
@@ -152,23 +172,49 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener {
 
 	@Override
 	public void runnableStateChanged(ControlledRunnableEvent e) {
-
-		System.out.print(e.getSource().getClass().getCanonicalName() + " state changed: ");
-
 		ControlledRunnable cr = (ControlledRunnable)e.getSource();
+
+		//		System.out.print(e.getSource().getClass().getCanonicalName() + " state changed: ");
+
+
 
 		switch (e.getStateType()) {
 		case RUNNING:
-			System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped());
+			System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped() + ", will stop=" + cr.willStop());
 			break;
 		case PAUSED:
-			System.out.println("paused=" + cr.isPaused());
+			if (imageAnimation.isAnimating()) {
+				bPauseRun.setText("Pause");
+			} else {
+				bPauseRun.setText("Run");
+			}
+			//			System.out.println("paused=" + cr.isPaused());
 			break;
 		case RESET:
-			System.out.println("reset=" + cr.isResetRequested());
+			System.out.println("will reset=" + cr.willReset());
 			break;
 		default:
+			System.out.println("unknown");
 			break;
+		}
+
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+
+		if (e.getSource() == bPauseRun) {
+			if (bPauseRun.getText() == "Pause") {
+				imageAnimation.pause(true);
+			} else if (bPauseRun.getText() == "Run") {
+				imageAnimation.pause(false);
+			}
+		} else if (e.getSource() == bStop) {
+			imageAnimation.stop();
+		}
+		else if (e.getSource() == bReset) {
+			imageAnimation.reset();
 		}
 
 	}

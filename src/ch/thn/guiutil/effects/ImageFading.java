@@ -28,7 +28,7 @@ import ch.thn.util.valuerange.ImageAlphaGradient;
  * Fading a single image or fading from one image to the other with given gradients.
  * Repeated calling the {@link #fade()} method performs each fading step.<br />
  * A {@link BufferedImage} can be passed on or one will be created internally if
- * not provided.
+ * not provided. For each fading step, the image is drawn on that buffered image.
  * 
  * 
  * @author Thomas Naeff (github.com/thnaeff)
@@ -157,6 +157,13 @@ public class ImageFading {
 	public void clear(Color c) {
 		graphicsFaded.setBackground(c);
 		graphicsFaded.clearRect(0, 0, width, height);
+	}
+
+	/**
+	 * Clears the image by filling it with a default color with alpha=0
+	 */
+	public void clear() {
+		clear(cClear);
 	}
 
 	/**
