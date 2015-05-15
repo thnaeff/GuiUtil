@@ -64,6 +64,7 @@ public class SimpleTableTest extends JPanel implements TableModelListener {
 
 
 		JLabel lCol2 = new JLabel("Col2");
+		lCol2.setToolTipText("tooltip");
 
 		SimpleTableColumn[] cols = new SimpleTableColumn[] {
 				new SimpleTableColumn("Col1", String.class, "default", null, null, false, 30, 0), 	//0

@@ -64,7 +64,7 @@ public class GuiUtilTest {
 		f.getContentPane().add(p);
 
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setMinimumSize(new Dimension(700, 400));
+		f.setMinimumSize(new Dimension(1000, 400));
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
 

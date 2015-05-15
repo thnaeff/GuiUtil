@@ -19,7 +19,6 @@ package ch.thn.guiutil.test;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,8 +27,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import ch.thn.guiutil.Loader;
-import ch.thn.guiutil.component.ImageAnimationLabel;
-import ch.thn.guiutil.effects.ImageAnimation;
+import ch.thn.guiutil.component.ImageAnimationLabelFading;
+import ch.thn.guiutil.effects.ImageAnimationFading;
+import ch.thn.guiutil.effects.ImageAnimationRotating;
 import ch.thn.util.thread.ControlledRunnable;
 import ch.thn.util.thread.ControlledRunnable.ControlledRunnableEvent;
 import ch.thn.util.thread.ControlledRunnable.ControlledRunnableListener;
@@ -42,16 +42,16 @@ import ch.thn.util.valuerange.ImageAlphaGradient;
 public class EffectsTest extends JPanel implements ControlledRunnableListener, ActionListener {
 	private static final long serialVersionUID = 8762214384151119341L;
 
-	private ImageAnimationLabel lImageAnimationLabel = null;
-	private JLabel lImageAnimation = null;
+	private ImageAnimationLabelFading lImageAnimationLabelFading = null;
+	private JLabel lImageAnimationFading = null;
+	private JLabel lImageAnimationRotating = null;
 
 	private JButton bPauseRun = null;
 	private JButton bStop = null;
 	private JButton bReset = null;
 
-	private final BufferedImage image2 = null;
-
-	private final ImageAnimation imageAnimation = null;
+	private ImageAnimationFading imageAnimationFading = null;
+	private ImageAnimationRotating imageAnimationRotating = null;
 
 
 	private static final ImageIcon[] icons = {
@@ -68,7 +68,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 	 */
 	public EffectsTest() {
 
-		setLayout(new FlowLayout());
+		setLayout(new FlowLayout(FlowLayout.LEFT));
 
 		bPauseRun = new JButton("Pause");
 		bPauseRun.addActionListener(this);
@@ -83,61 +83,81 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 		add(bReset);
 		add(bPauseRun);
 
-		lImageAnimationLabel = new ImageAnimationLabel("ImageAnimationLabel: ");
-		lImageAnimationLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-		lImageAnimationLabel.getRunnable().addControlledRunnableListener(this);
-
-		lImageAnimation = new JLabel("ImageAnimation:");
-		lImageAnimation.setHorizontalTextPosition(SwingConstants.LEFT);
-
 
 		// ================================
 
-		//		ImageAlphaGradient simpleGradientIn = new ImageAlphaGradient(ImageAlphaGradient.FADE_IN, 20, 0, 0);
-		//		ImageAlphaGradient simpleGradientOut = new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 20, 0, 0);
-		//
-		//		System.out.println(simpleGradientIn);
-		//		System.out.println(simpleGradientOut);
-		//
-		//		imageAnimation = new ImageAnimation(this, 20, 20);
-		//		imageAnimation.addControlledRunnableListener(this);
-		//
-		//		imageAnimation.addStep(icons[0].getImage(),
-		//				simpleGradientIn, 80, 2000);
-		//		imageAnimation.addStep(icons[0].getImage(),
-		//				simpleGradientOut, 80, 1000);
-		//
-		//
-		//		image2 = imageAnimation.getAnimatedImage();
-		//		lImageAnimation.setIcon(new ImageIcon(image2));
-		//
-		//
-		//		Thread tFading = new Thread(imageAnimation);
-		//		tFading.start();
-		//
-		//		imageAnimation.animate(2, false);
+		ImageAlphaGradient simpleGradientIn = new ImageAlphaGradient(ImageAlphaGradient.FADE_IN, 20, 0, 0);
+		ImageAlphaGradient simpleGradientOut = new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 20, 0, 0);
+
+		System.out.println(simpleGradientIn);
+		System.out.println(simpleGradientOut);
+
+		lImageAnimationFading = new JLabel(ImageAnimationFading.class.getSimpleName() + ":");
+		lImageAnimationFading.setHorizontalTextPosition(SwingConstants.LEFT);
+
+		imageAnimationFading = new ImageAnimationFading(lImageAnimationFading, 40, 40);
+		imageAnimationFading.addControlledRunnableListener(this);
+
+		imageAnimationFading.addStep(icons[0].getImage(),
+				simpleGradientIn, 80, 2000, 0);
+		imageAnimationFading.addStep(icons[0].getImage(),
+				simpleGradientOut, 80, 1000, 0);
+
+		lImageAnimationFading.setIcon(new ImageIcon(imageAnimationFading.getOutputImage()));
+
+
+		Thread tFading = new Thread(imageAnimationFading);
+		tFading.start();
+
+		imageAnimationFading.go(2, false);
 
 
 		// ================================
 
 
-		lImageAnimationLabel.setIcon(icons[5]);
-		lImageAnimationLabel.addAnimationStep(new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 20), 100);
-		lImageAnimationLabel.addAnimationStep(new ImageAlphaGradient(ImageAlphaGradient.FADE_IN, 5), 500);
-		lImageAnimationLabel.addAnimationStep(new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 2), 1000, 0, 5);
+		lImageAnimationLabelFading = new ImageAnimationLabelFading(ImageAnimationLabelFading.class.getSimpleName() + ":");
+		lImageAnimationLabelFading.setHorizontalTextPosition(SwingConstants.LEFT);
+		lImageAnimationLabelFading.getImageAnimation().addControlledRunnableListener(this);
+
+		lImageAnimationLabelFading.setIcon(icons[5]);
+		lImageAnimationLabelFading.addStep(new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 20), 100, 0, 0);
+		lImageAnimationLabelFading.addStep(new ImageAlphaGradient(ImageAlphaGradient.FADE_IN, 5), 500, 0, 0);
+		lImageAnimationLabelFading.addStep(new ImageAlphaGradient(ImageAlphaGradient.FADE_OUT, 2), 500, 0, 5);
 
 
-		lImageAnimationLabel.animate(5);
 
-		lImageAnimationLabel.setIcon(icons[4]);
-		lImageAnimationLabel.animate(5);
+		lImageAnimationLabelFading.animate(3);
+
+		lImageAnimationLabelFading.setIcon(icons[4]);
+		lImageAnimationLabelFading.animate(3);
 
 
 		// ================================
 
+		lImageAnimationRotating = new JLabel(ImageAnimationRotating.class.getSimpleName() + ":");
+		lImageAnimationRotating.setHorizontalTextPosition(SwingConstants.LEFT);
 
-		add(lImageAnimation);
-		add(lImageAnimationLabel);
+		imageAnimationRotating = new ImageAnimationRotating(lImageAnimationRotating, 20, 20);
+		imageAnimationRotating.addControlledRunnableListener(this);
+
+		imageAnimationRotating.addStep(icons[5].getImage(), 10, 50, 500, 3);
+
+		lImageAnimationRotating.setIcon(new ImageIcon(imageAnimationRotating.getOutputImage()));
+
+
+		Thread tRotating = new Thread(imageAnimationRotating);
+		tRotating.start();
+
+		imageAnimationRotating.go(2, false);
+
+		// ================================
+
+		// ================================
+
+
+		add(lImageAnimationFading);
+		add(lImageAnimationLabelFading);
+		add(lImageAnimationRotating);
 
 	}
 
@@ -153,46 +173,71 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 		ControlledRunnable cr = (ControlledRunnable)e.getSource();
 
 
-		if (cr == imageAnimation) {
+		if (cr == imageAnimationFading) {
 			switch (e.getStateType()) {
 			case RUNNING:
-				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
+				System.out.print(imageAnimationFading.getClass().getSimpleName() + ": ");
 				System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped() + ", will stop=" + cr.willStop());
 				break;
 			case PAUSED:
-				if (imageAnimation.isAnimating()) {
+				if (imageAnimationFading.isAnimating()) {
 					bPauseRun.setText("Pause");
 				} else {
 					bPauseRun.setText("Run");
 				}
-				//			System.out.print(e.getSource().getClass().getSimpleName() + ": ");
-				//			System.out.println("paused=" + cr.isPaused());
+				System.out.print(imageAnimationFading.getClass().getSimpleName() + ": ");
+				System.out.println("paused=" + cr.isPaused());
 				break;
 			case RESET:
-				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
+				System.out.print(imageAnimationFading.getClass().getSimpleName() + ": ");
 				System.out.println("will reset=" + cr.willReset());
 				break;
+			case WAIT:
+				break;
 			default:
-				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
+				System.out.print(imageAnimationFading.getClass().getSimpleName() + ": ");
 				System.out.println("unknown");
 				break;
 			}
-		} else if (cr == lImageAnimationLabel.getRunnable()) {
+		} else if (cr == lImageAnimationLabelFading.getImageAnimation()) {
 			switch (e.getStateType()) {
 			case RUNNING:
-				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
+				System.out.print(lImageAnimationLabelFading.getClass().getSimpleName() + ": ");
 				System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped() + ", will stop=" + cr.willStop());
 				break;
 			case PAUSED:
-				//				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
-				//				System.out.println("paused=" + cr.isPaused());
+				System.out.print(lImageAnimationLabelFading.getClass().getSimpleName() + ": ");
+				System.out.println("paused=" + cr.isPaused());
 				break;
 			case RESET:
-				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
+				System.out.print(lImageAnimationLabelFading.getClass().getSimpleName() + ": ");
 				System.out.println("will reset=" + cr.willReset());
 				break;
+			case WAIT:
+				break;
 			default:
-				System.out.print(e.getSource().getClass().getSimpleName() + ": ");
+				System.out.print(lImageAnimationLabelFading.getClass().getSimpleName() + ": ");
+				System.out.println("unknown");
+				break;
+			}
+		}if (cr == imageAnimationRotating) {
+			switch (e.getStateType()) {
+			case RUNNING:
+				System.out.print(imageAnimationRotating.getClass().getSimpleName() + ": ");
+				System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped() + ", will stop=" + cr.willStop());
+				break;
+			case PAUSED:
+				System.out.print(imageAnimationRotating.getClass().getSimpleName() + ": ");
+				System.out.println("paused=" + cr.isPaused());
+				break;
+			case RESET:
+				System.out.print(imageAnimationRotating.getClass().getSimpleName() + ": ");
+				System.out.println("will reset=" + cr.willReset());
+				break;
+			case WAIT:
+				break;
+			default:
+				System.out.print(imageAnimationRotating.getClass().getSimpleName() + ": ");
 				System.out.println("unknown");
 				break;
 			}
@@ -206,15 +251,15 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 
 		if (e.getSource() == bPauseRun) {
 			if (bPauseRun.getText() == "Pause") {
-				imageAnimation.pause(true);
+				imageAnimationFading.pause(true);
 			} else if (bPauseRun.getText() == "Run") {
-				imageAnimation.pause(false);
+				imageAnimationFading.pause(false);
 			}
 		} else if (e.getSource() == bStop) {
-			imageAnimation.stop();
+			imageAnimationFading.stop();
 		}
 		else if (e.getSource() == bReset) {
-			imageAnimation.reset();
+			imageAnimationFading.reset();
 		}
 
 	}

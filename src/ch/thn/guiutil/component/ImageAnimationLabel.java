@@ -17,7 +17,6 @@
 package ch.thn.guiutil.component;
 
 import java.awt.image.BufferedImage;
-import java.util.LinkedList;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -25,29 +24,25 @@ import javax.swing.JLabel;
 
 import ch.thn.guiutil.ImageUtil;
 import ch.thn.guiutil.effects.ImageAnimation;
-import ch.thn.util.thread.ControlledRunnable;
-import ch.thn.util.valuerange.ImageAlphaGradient;
 
 /**
- * A {@link JLabel} whose icon can be animated.<br />
- * The icon has to be set with the
- * standard {@link #setIcon(Icon)} method and the animation can be defined with
- * {@link #addAnimationStep(ImageAlphaGradient, long)} and
- * {@link #addAnimationStep(ImageAlphaGradient, long, long, int)}. The animation
- * can be started and paused with {@link #animate(int)} and {@link #pause(boolean)}.
+ * This is the base class for a {@link JLabel} whose icon can be animated.<br />
+ * The icon has to be set with the standard {@link #setIcon(Icon)} method.<br />
+ * See {@link ImageAnimationLabelFading} for an implementation example.
  *
  *
  * @author Thomas Naeff (github.com/thnaeff)
+ * 
+ * @param <A>
  *
  */
-public class ImageAnimationLabel extends JLabel {
+public abstract class ImageAnimationLabel<A extends ImageAnimation<?>> extends JLabel {
 	private static final long serialVersionUID = -728553274740471716L;
 
-	private LinkedList<AnimationStep> animationSteps = null;
-
-	private ImageAnimation imageAnimation = null;
+	private A imageAnimation = null;
 
 	private BufferedImage bufferedImage = null;
+
 	private Icon originalIcon = null;
 	private ImageIcon imageIcon = null;
 
@@ -100,27 +95,6 @@ public class ImageAnimationLabel extends JLabel {
 		init();
 	}
 
-	//TODO
-	public ControlledRunnable getRunnable() {
-		return imageAnimation;
-	}
-
-	/**
-	 * 
-	 * 
-	 */
-	private void init() {
-
-		animationSteps = new LinkedList<>();
-
-		imageAnimation = new ImageAnimation(this, null);
-
-		Thread t = new Thread(imageAnimation);
-		t.start();
-		t.setName(this.getClass().getSimpleName());
-
-	}
-
 	/**
 	 * 
 	 * 
@@ -131,6 +105,38 @@ public class ImageAnimationLabel extends JLabel {
 	 */
 	public ImageAnimationLabel(String text, Icon icon, int horizontalAlignment) {
 		super(text, icon, horizontalAlignment);
+		init();
+	}
+
+	//TODO
+	public A getImageAnimation() {
+		return imageAnimation;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param imageAnimation
+	 */
+	protected void init() {
+
+		if (imageAnimation == null) {
+			throw new NullPointerException("Image animation not set");
+		}
+
+		Thread t = new Thread(imageAnimation);
+		t.setName(this.getClass().getSimpleName());
+		t.start();
+
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param imageAnimation
+	 */
+	protected void setImageAnimation(A imageAnimation) {
+		this.imageAnimation = imageAnimation;
 	}
 
 	/**
@@ -149,24 +155,16 @@ public class ImageAnimationLabel extends JLabel {
 				|| bufferedImage.getHeight() != imageIcon.getIconHeight()) {
 			bufferedImage = new BufferedImage(imageIcon.getIconWidth(), imageIcon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
 
-			imageAnimation.setAnimatedImage(bufferedImage);
+			imageAnimation.setOutputImage(bufferedImage);
 		}
 
 		if (iconChanged) {
-			//(Re)build the animation steps here if the icon has changed
-			imageAnimation.clearSteps();
-			for (AnimationStep animationStep : animationSteps) {
-				imageAnimation.addStep(imageIcon.getImage(), animationStep.gradient,
-						animationStep.timeout, animationStep.delay, animationStep.repeat);
-			}
+			super.setIcon(new ImageIcon(imageAnimation.getOutputImage()));
 
 			iconChanged = false;
-
-			super.setIcon(new ImageIcon(bufferedImage));
 		}
 
-		imageAnimation.animate(loops);
-
+		imageAnimation.go(loops);
 	}
 
 	/**
@@ -179,34 +177,13 @@ public class ImageAnimationLabel extends JLabel {
 	}
 
 	/**
+	 * A flag which indicates if the icon has been changed with {@link #setIcon(Icon)}
 	 * 
-	 * 
-	 * @param gradient The gradient for the image
-	 * @param timeout The timeout between each image gradient step (determines
-	 * the speed of the animation)
-	 * @param delay The delay for the animation to start
-	 * @return The step index
+	 * @return
 	 */
-	public int addAnimationStep(ImageAlphaGradient gradient, long timeout) {
-		return addAnimationStep(gradient, timeout, 0, 0);
+	protected boolean hasIconChanged() {
+		return iconChanged;
 	}
-
-	/**
-	 * 
-	 * 
-	 * @param gradient The gradient for the image
-	 * @param timeout The timeout between each image gradient step (determines
-	 * the speed of the animation)
-	 * @param delay The delay for the animation to start
-	 * @param repeat The number of times this animation step should be repeated.
-	 * A repeat of 1 means the step will be animated twice (once plus 1 repeat).
-	 * @return The step index
-	 */
-	public int addAnimationStep(ImageAlphaGradient gradient, long timeout, long delay, int repeat) {
-		animationSteps.add(new AnimationStep(gradient, timeout, delay, repeat));
-		return animationSteps.size() - 1;
-	}
-
 
 	/**
 	 * Defines the icon this component will display. Setting a icon will stop the
@@ -243,6 +220,15 @@ public class ImageAnimationLabel extends JLabel {
 	}
 
 	/**
+	 * Image to animate
+	 * 
+	 * @return
+	 */
+	protected ImageIcon getImageIcon() {
+		return imageIcon;
+	}
+
+	/**
 	 * Returns the icon that the label displays.<br />
 	 * <br />
 	 * Note: This icon is not the same object as the one set with {@link #setIcon(Icon)}.
@@ -252,43 +238,9 @@ public class ImageAnimationLabel extends JLabel {
 	 */
 	@Override
 	public Icon getIcon() {
+		//Just a method override to provide additional javadoc information
+
 		return super.getIcon();
-	}
-
-
-
-	/**************************************************************************
-	 * 
-	 * 
-	 * 
-	 *
-	 * @author Thomas Naeff (github.com/thnaeff)
-	 *
-	 */
-	private class AnimationStep {
-
-		protected ImageAlphaGradient gradient = null;
-		protected long timeout = 0;
-		protected long delay = 0;
-		protected int repeat = 0;
-
-		/**
-		 * 
-		 * 
-		 * @param gradient
-		 * @param timeout
-		 * @param delay
-		 */
-		public AnimationStep(ImageAlphaGradient gradient, long timeout, long delay, int repeat) {
-			this.gradient = gradient;
-			this.timeout = timeout;
-			this.delay = delay;
-			this.repeat = repeat;
-
-		}
-
-
-
 	}
 
 }

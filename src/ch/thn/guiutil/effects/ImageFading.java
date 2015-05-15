@@ -17,8 +17,6 @@
 package ch.thn.guiutil.effects;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -34,7 +32,7 @@ import ch.thn.util.valuerange.ImageAlphaGradient;
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class ImageFading {
+public class ImageFading extends ImageManipulation {
 
 	private Image image1 = null;
 	private Image image2 = null;
@@ -42,17 +40,11 @@ public class ImageFading {
 	private ImageAlphaGradient gradient1 = null;
 	private ImageAlphaGradient gradient2 = null;
 
-	private BufferedImage imageFaded = null;
-
-	private Graphics2D graphicsFaded = null;
-
 	private Float nextAlpha1 = null;
 	private Float nextAlpha2 = null;
 
-	private int width = 0;
-	private int height = 0;
-
-	public static final Color cClear = new Color(0, 0, 0, 0);
+	private int image1Width = 0;
+	private int image1Height = 0;
 
 	/**
 	 * 
@@ -99,10 +91,16 @@ public class ImageFading {
 	 */
 	public ImageFading(BufferedImage imageToDrawOn, Image image1, Image image2,
 			ImageAlphaGradient gradient1, ImageAlphaGradient gradient2) {
-		this.image1 = image1;
-		this.image2 = image2;
+		super();
+
+		setImage1(image1);
+		setImage1(image1);
+
 		this.gradient1 = gradient1;
 		this.gradient2 = gradient2;
+
+		int width = 0;
+		int height = 0;
 
 		if (image1 == null) {
 			width = image2.getWidth(null);
@@ -113,8 +111,7 @@ public class ImageFading {
 		}
 
 		if (imageToDrawOn == null) {
-			imageFaded = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-			graphicsFaded = imageFaded.createGraphics();
+			setFadingImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
 		} else {
 			setFadingImage(imageToDrawOn);
 		}
@@ -129,13 +126,58 @@ public class ImageFading {
 	 * @param imageToDrawOn
 	 */
 	public void setFadingImage(BufferedImage imageToDrawOn) {
-		this.imageFaded = imageToDrawOn;
-		graphicsFaded = imageToDrawOn.createGraphics();
+		super.setManipulatingImage(imageToDrawOn);
+
+		calcCenter(image1Width, image1Height);
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param image1
+	 */
+	public void setImage1(Image image1) {
+		this.image1 = image1;
+
+		if (image1 != null) {
+			image1Width = image1.getWidth(null);
+			image1Height = image1.getHeight(null);
+		}
+
+		calcCenter(image1Width, image1Height);
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param image1
+	 */
+	public void setImage2(Image image2) {
+		this.image2 = image2;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param gradient1
+	 */
+	public void setGradient1(ImageAlphaGradient gradient1) {
+		this.gradient1 = gradient1;
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param gradient2
+	 */
+	public void setGradient2(ImageAlphaGradient gradient2) {
+		this.gradient2 = gradient2;
 	}
 
 	/**
 	 * Resets the gradients and continues with the first gradient value
 	 */
+	@Override
 	public void reset() {
 
 		if (gradient1 != null) {
@@ -151,27 +193,8 @@ public class ImageFading {
 
 	}
 
-	/**
-	 * Clears the image by filling it with the given color
-	 */
-	public void clear(Color c) {
-		graphicsFaded.setBackground(c);
-		graphicsFaded.clearRect(0, 0, width, height);
-	}
 
-	/**
-	 * Clears the image by filling it with a default color with alpha=0
-	 */
-	public void clear() {
-		clear(cClear);
-	}
-
-	/**
-	 * Checks if there are any more fading steps or if the fading is done.
-	 * 
-	 * @return <code>true</code> if fading is done, <code>false</code> if more steps
-	 * are available.
-	 */
+	@Override
 	public boolean isDone() {
 		//The fading is done if there are no alpha values left any more
 		if ((gradient1 == null || nextAlpha1 == null)
@@ -182,20 +205,25 @@ public class ImageFading {
 		return false;
 	}
 
+	@Override
+	protected BufferedImage manipulate() {
+		return fade();
+	}
+
 	/**
 	 * Continues with the next fading step and returns the resulting image.
 	 * 
 	 * @return
 	 */
 	public BufferedImage fade() {
-		clear(cClear);
+		clear();
 
 		//--- image1: draw with current alpha value
 		if (image1 != null) {
 			//Don't draw anything if alpha value is 0
 			if (nextAlpha1 != null && nextAlpha1 != 0.0) {
-				graphicsFaded.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha1));
-				graphicsFaded.drawImage(image1, 0, 0, null);
+				graphicsManipulated.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha1));
+				graphicsManipulated.drawImage(image1, centerWidth, centerHeight, null);
 			}
 		}
 
@@ -213,8 +241,8 @@ public class ImageFading {
 		if (image2 != null) {
 			//Don't draw anything if alpha value is 0
 			if (nextAlpha2 != null && nextAlpha2 != 0.0) {
-				graphicsFaded.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha2));
-				graphicsFaded.drawImage(image2, 0, 0, null);
+				graphicsManipulated.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha2));
+				graphicsManipulated.drawImage(image2, centerWidth, centerHeight, null);
 			}
 		}
 
@@ -227,8 +255,9 @@ public class ImageFading {
 			}
 		}
 
-		return imageFaded;
+		//graphicsManipulated.drawRect(0, 0, imageManipulatedWidth-1, imageManipulatedHeight-1);
 
+		return imageManipulated;
 	}
 
 

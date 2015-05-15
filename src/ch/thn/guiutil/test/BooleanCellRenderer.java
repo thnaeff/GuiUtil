@@ -27,29 +27,30 @@ import javax.swing.table.TableCellRenderer;
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class BooleanCellRenderer implements TableCellRenderer {
+public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer {
+	private static final long serialVersionUID = 8337665134219788459L;
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
-		
-//		System.out.println(row + ", " + column + " - rendering boolean: " + value);
-		
+
+		//		System.out.println(row + ", " + column + " - rendering boolean: " + value);
+
 		if (value == null) {
 			value = new Boolean(false);
 		}
-		
-		JCheckBox jb = new JCheckBox();
-		
+
 		if (isSelected && !hasFocus) {
-			jb.setBackground(Color.blue);
+			setBackground(Color.blue);
 		} else if (hasFocus) {
-			jb.setBackground(Color.green);
+			setBackground(Color.green);
+		} else {
+			setBackground(null);
 		}
-		
-		jb.setSelected(((Boolean)value).booleanValue());
-		
-		return jb;
+
+		setSelected(((Boolean)value).booleanValue());
+
+		return this;
 	}
-	
+
 }

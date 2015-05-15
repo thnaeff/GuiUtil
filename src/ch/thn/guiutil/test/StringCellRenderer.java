@@ -19,7 +19,6 @@ package ch.thn.guiutil.test;
 import java.awt.Color;
 import java.awt.Component;
 
-import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
@@ -28,29 +27,32 @@ import javax.swing.table.TableCellRenderer;
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class StringCellRenderer implements TableCellRenderer {
+public class StringCellRenderer extends JLabel implements TableCellRenderer {
+	private static final long serialVersionUID = -5321528150139907491L;
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
-//		System.out.println(row + ", " + column + " - string renderer: " + value);
-		
-		JLabel l = new JLabel();
-		l.setOpaque(true);
-		
+		//		System.out.println(row + ", " + column + " - string renderer: " + value);
+
+		setOpaque(true);
+
 		if (isSelected && !hasFocus) {
-			l.setBackground(Color.blue.brighter());
+			setBackground(Color.blue.brighter());
 		} else if (hasFocus) {
-			l.setBackground(Color.green.brighter());
+			setBackground(Color.green.brighter());
+		} else {
+			setBackground(null);
 		}
-		
-		
+
+
 		if (value != null) {
-			l.setText(value.toString());
+			setText(value.toString());
+			setToolTipText(value.toString());
 		}
-		
-		return l;
-		
+
+		return this;
+
 	}
 
 }
