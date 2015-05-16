@@ -17,6 +17,7 @@
 package ch.thn.guiutil.effects;
 
 import java.awt.Component;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
@@ -42,6 +43,7 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 	private LinkedList<AnimationStep> animationSteps = null;
 
 	private BufferedImage imageOut = null;
+	private Graphics2D graphicsOut = null;
 
 	private Component componentToRepaint = null;
 
@@ -141,16 +143,26 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 	}
 
 	/**
+	 * 
+	 * 
+	 * @return
+	 */
+	public Graphics2D getOutputGraphics() {
+		return graphicsOut;
+	}
+
+	/**
 	 * Sets the given image as image to draw on
 	 * 
 	 * @param image
 	 */
 	public void setOutputImage(BufferedImage image) {
 		this.imageOut = image;
+		this.graphicsOut = image.createGraphics();
 
 		//Set the new image also for all the already defined steps
 		for (AnimationStep animationStep : getAnimationSteps()) {
-			animationStep.getImageManipulation().setManipulatingImage(image);
+			animationStep.getImageManipulation().setManipulatingImage(image, graphicsOut);
 		}
 	}
 
@@ -247,7 +259,7 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 
 		imageManipulation.reset();
 
-		//Fading
+		//All steps until done
 		while (!imageManipulation.isDone()
 				&& !isResetRequested()
 				&& !isStopRequested()) {
@@ -262,18 +274,18 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 
 			controlledWait(animationStep.timeout);
 
-		}	//End fading
+		}	//End all steps until done
+
 	}
 
 	@Override
 	public boolean execute() {
 
-		//Each animation
+		//Each animation step
 		for (int animationIndex = 0;
 				animationIndex < animationSteps.size()
 				&& !isResetRequested() && !isStopRequested();
 				animationIndex++) {
-
 
 			AnimationStep animationStep = animationSteps.get(animationIndex);
 
@@ -283,7 +295,6 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 							&& !isResetRequested() && !isStopRequested();
 					stepRepeat++) {
 
-
 				if (animationStep.delay > 0) {
 					controlledWait(animationStep.delay);
 				}
@@ -292,7 +303,7 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 
 			}	//End step repeats
 
-		}	//End each animation
+		}	//End each animation step
 
 		//Not done. The number of loops has to be reached.
 		return false;

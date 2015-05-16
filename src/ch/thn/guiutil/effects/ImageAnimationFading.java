@@ -106,7 +106,7 @@ public class ImageAnimationFading extends ImageAnimation<ImageFading> {
 			ImageAlphaGradient gradient2, long timeout, long delay, int repeat) {
 
 		return addAnimationStep(new AnimationStep(
-				new ImageFading(getOutputImage(), image1, image2, gradient1, gradient2),
+				new ImageFading(getOutputImage(), getOutputGraphics(), image1, image2, gradient1, gradient2),
 				timeout, delay, repeat));
 
 	}
@@ -127,7 +127,7 @@ public class ImageAnimationFading extends ImageAnimation<ImageFading> {
 	public int addStep(Image image, ImageAlphaGradient gradient, long timeout, long delay, int repeat) {
 
 		return addAnimationStep(new AnimationStep(
-				new ImageFading(getOutputImage(), image, null, gradient, null),
+				new ImageFading(getOutputImage(), getOutputGraphics(), image, null, gradient, null),
 				timeout, delay, repeat));
 
 	}

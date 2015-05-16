@@ -32,13 +32,20 @@ public abstract class ImageManipulation {
 
 	protected BufferedImage imageManipulated = null;
 
+	/** The output graphics where the manipulated image is drawn */
 	protected Graphics2D graphicsManipulated = null;
 
+	/** The width of the whole output image */
 	protected int imageManipulatedWidth = 0;
+	/** The height of the whole output image */
 	protected int imageManipulatedHeight = 0;
 
-	protected int centerWidth = 0;
-	protected int centerHeight = 0;
+	/** The X coordinate of the center */
+	protected int centerX = 0;
+	/** The Y coordinate of the center */
+	protected int centerY = 0;
+
+	private boolean graphicsCreatedInternally = false;
 
 	public static final Color cClear = new Color(0, 0, 0, 0);
 
@@ -57,10 +64,11 @@ public abstract class ImageManipulation {
 	 * 
 	 * 
 	 * @param imageToDrawOn
+	 * @param graphicsToDrawOn
 	 */
-	public ImageManipulation(BufferedImage imageToDrawOn) {
+	public ImageManipulation(BufferedImage imageToDrawOn, Graphics2D graphicsToDrawOn) {
 
-		setManipulatingImage(imageToDrawOn);
+		setManipulatingImage(imageToDrawOn, graphicsToDrawOn);
 
 	}
 
@@ -72,22 +80,33 @@ public abstract class ImageManipulation {
 	 */
 	public ImageManipulation(int width, int height) {
 
-		setManipulatingImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+		setManipulatingImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB), null);
 
 	}
 
 
 
 	/**
-	 * Sets the image which should be used to draw the manipulated images on
+	 * Sets the image and graphics which should be used to draw the manipulated
+	 * images on. The graphics should be taken from imageToDrawOn, they can be
+	 * <code>null</code> to have them created internally. The parameter graphicsToDrawOn
+	 * is only available so that the same graphics object can be shared between
+	 * multiple image manipulation instances.
 	 * 
-	 * @param imageToDrawOn
+	 * @param graphicsToDrawOn
 	 */
-	protected void setManipulatingImage(BufferedImage imageToDrawOn) {
+	protected void setManipulatingImage(BufferedImage imageToDrawOn, Graphics2D graphicsToDrawOn) {
 		this.imageManipulated = imageToDrawOn;
-		graphicsManipulated = imageToDrawOn.createGraphics();
 
-		imageManipulatedWidth = imageManipulated.getWidth();
+		if (graphicsToDrawOn != null) {
+			graphicsCreatedInternally = false;
+			this.graphicsManipulated = graphicsToDrawOn;
+		} else {
+			graphicsCreatedInternally = true;
+			this.graphicsManipulated = imageToDrawOn.createGraphics();
+		}
+
+		imageManipulatedWidth = imageToDrawOn.getWidth();
 		imageManipulatedHeight = imageManipulated.getHeight();
 	}
 
@@ -99,8 +118,8 @@ public abstract class ImageManipulation {
 	 * @param imageHeight
 	 */
 	protected void calcCenter(int imageWidth, int imageHeight) {
-		this.centerWidth = imageManipulatedWidth / 2 - imageWidth / 2;
-		this.centerHeight = imageManipulatedHeight / 2 - imageHeight / 2;
+		this.centerX = imageManipulatedWidth / 2 - imageWidth / 2;
+		this.centerY = imageManipulatedHeight / 2 - imageHeight / 2;
 	}
 
 	/**
@@ -121,7 +140,12 @@ public abstract class ImageManipulation {
 	/**
 	 * Resets the image
 	 */
-	public abstract void reset();
+	public void reset() {
+		if (graphicsCreatedInternally) {
+			//Also "reset" the graphics object by creating a new one
+			graphicsManipulated = this.imageManipulated.createGraphics();
+		}
+	}
 
 
 	/**

@@ -17,6 +17,7 @@
 package ch.thn.guiutil.effects;
 
 import java.awt.AlphaComposite;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -56,7 +57,7 @@ public class ImageFading extends ImageManipulation {
 	 */
 	public ImageFading(Image image1, Image image2,
 			ImageAlphaGradient gradient1, ImageAlphaGradient gradient2) {
-		this(null, image1, image2, gradient1, gradient2);
+		this(null, null, image1, image2, gradient1, gradient2);
 	}
 
 	/**
@@ -66,30 +67,34 @@ public class ImageFading extends ImageManipulation {
 	 * @param gradient1
 	 */
 	public ImageFading(Image image1, ImageAlphaGradient gradient1) {
-		this(null, image1, null, gradient1, null);
+		this(null, null, image1, null, gradient1, null);
 	}
 
 	/**
 	 * 
 	 * 
 	 * @param imageToDrawOn
+	 * @param graphicsToDrawOn
 	 * @param image1
 	 * @param gradient1
 	 */
-	public ImageFading(BufferedImage imageToDrawOn, Image image1, ImageAlphaGradient gradient1) {
-		this(imageToDrawOn, image1, null, gradient1, null);
+	public ImageFading(BufferedImage imageToDrawOn, Graphics2D graphicsToDrawOn,
+			Image image1, ImageAlphaGradient gradient1) {
+		this(imageToDrawOn, graphicsToDrawOn, image1, null, gradient1, null);
 	}
 
 	/**
 	 * 
 	 * 
 	 * @param imageToDrawOn
+	 * @param graphicsToDrawOn
 	 * @param image1
 	 * @param image2
 	 * @param gradient1
 	 * @param gradient2
 	 */
-	public ImageFading(BufferedImage imageToDrawOn, Image image1, Image image2,
+	public ImageFading(BufferedImage imageToDrawOn, Graphics2D graphicsToDrawOn,
+			Image image1, Image image2,
 			ImageAlphaGradient gradient1, ImageAlphaGradient gradient2) {
 		super();
 
@@ -111,25 +116,21 @@ public class ImageFading extends ImageManipulation {
 		}
 
 		if (imageToDrawOn == null) {
-			setFadingImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+			setManipulatingImage(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB), null);
 		} else {
-			setFadingImage(imageToDrawOn);
+			setManipulatingImage(imageToDrawOn, graphicsToDrawOn);
 		}
 
 		reset();
 
 	}
 
-	/**
-	 * Sets the image which should be used to draw the faded images on
-	 * 
-	 * @param imageToDrawOn
-	 */
-	public void setFadingImage(BufferedImage imageToDrawOn) {
-		super.setManipulatingImage(imageToDrawOn);
 
+	@Override
+	public void setManipulatingImage(BufferedImage imageToDrawOn, Graphics2D graphicsToDrawOn) {
+		super.setManipulatingImage(imageToDrawOn, graphicsToDrawOn);
 		calcCenter(image1Width, image1Height);
-	}
+	};
 
 	/**
 	 * 
@@ -179,6 +180,7 @@ public class ImageFading extends ImageManipulation {
 	 */
 	@Override
 	public void reset() {
+		super.reset();
 
 		if (gradient1 != null) {
 			gradient1.reset();
@@ -223,7 +225,7 @@ public class ImageFading extends ImageManipulation {
 			//Don't draw anything if alpha value is 0
 			if (nextAlpha1 != null && nextAlpha1 != 0.0) {
 				graphicsManipulated.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha1));
-				graphicsManipulated.drawImage(image1, centerWidth, centerHeight, null);
+				graphicsManipulated.drawImage(image1, centerX, centerY, null);
 			}
 		}
 
@@ -242,7 +244,7 @@ public class ImageFading extends ImageManipulation {
 			//Don't draw anything if alpha value is 0
 			if (nextAlpha2 != null && nextAlpha2 != 0.0) {
 				graphicsManipulated.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, nextAlpha2));
-				graphicsManipulated.drawImage(image2, centerWidth, centerHeight, null);
+				graphicsManipulated.drawImage(image2, centerX, centerY, null);
 			}
 		}
 

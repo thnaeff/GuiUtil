@@ -83,6 +83,7 @@ public class ImageAnimationRotating extends ImageAnimation<ImageRotating> {
 	 * 
 	 * 
 	 * @param image
+	 * @param degreesToRotate
 	 * @param degreesPerStep
 	 * @param timeout The timeout between each image rotation step (determines
 	 * the speed of the rotation)
@@ -91,10 +92,10 @@ public class ImageAnimationRotating extends ImageAnimation<ImageRotating> {
 	 * A repeat of 1 means the step will be animated twice (once plus 1 repeat).
 	 * @return The step index
 	 */
-	public int addStep(Image image, int degreesPerStep, long timeout, long delay, int repeat) {
+	public int addStep(Image image, int degreesToRotate, int degreesPerStep, long timeout, long delay, int repeat) {
 
 		return addAnimationStep(new AnimationStep(
-				new ImageRotating(getOutputImage(), image, degreesPerStep),
+				new ImageRotating(getOutputImage(), getOutputGraphics(), image, degreesToRotate, degreesPerStep),
 				timeout, delay, repeat));
 
 	}

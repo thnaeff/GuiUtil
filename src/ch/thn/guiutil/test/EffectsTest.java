@@ -140,7 +140,9 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 		imageAnimationRotating = new ImageAnimationRotating(lImageAnimationRotating, 20, 20);
 		imageAnimationRotating.addControlledRunnableListener(this);
 
-		imageAnimationRotating.addStep(icons[5].getImage(), 10, 50, 500, 3);
+		imageAnimationRotating.addStep(icons[5].getImage(), 180, 10, 50, 500, 0);
+		imageAnimationRotating.addStep(icons[5].getImage(), 180, -10, 50, 500, 0);
+		imageAnimationRotating.addStep(icons[5].getImage(), 180, 10, 50, 500, 0);
 
 		lImageAnimationRotating.setIcon(new ImageIcon(imageAnimationRotating.getOutputImage()));
 
@@ -148,7 +150,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 		Thread tRotating = new Thread(imageAnimationRotating);
 		tRotating.start();
 
-		imageAnimationRotating.go(2, false);
+		imageAnimationRotating.go(3, false);
 
 		// ================================
 

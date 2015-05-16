@@ -16,6 +16,7 @@
  */
 package ch.thn.guiutil.effects;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -33,17 +34,22 @@ public class ImageRotating extends ImageManipulation {
 	private int imageWidth = 0;
 	private int imageHeight = 0;
 
+	private double radiansPerStep = 0;
+
 	private int degreesPerStep = 0;
+	private int degreesRotated = 0;
+	private int degreesToRotate = 0;
 
 
 	/**
 	 * 
 	 * 
 	 * @param image
+	 * @param degreesToRotate
 	 * @param degreesPerStep
 	 */
-	public ImageRotating(Image image, int degreesPerStep) {
-		this(null, image, degreesPerStep);
+	public ImageRotating(Image image, int degreesToRotate, int degreesPerStep) {
+		this(null, null, image, degreesToRotate, degreesPerStep);
 	}
 
 
@@ -51,27 +57,35 @@ public class ImageRotating extends ImageManipulation {
 	 * 
 	 * 
 	 * @param imageToDrawOn
+	 * @param graphicsToDrawOn
 	 * @param image
+	 * @param degreesToRotate
 	 * @param degreesPerStep
 	 */
-	public ImageRotating(BufferedImage imageToDrawOn, Image image, int degreesPerStep) {
-		this.degreesPerStep = degreesPerStep;
+	public ImageRotating(BufferedImage imageToDrawOn, Graphics2D graphicsToDrawOn,
+			Image image, int degreesToRotate, int degreesPerStep) {
+		this.degreesToRotate = degreesToRotate;
 
+		setDegreesPerStep(degreesPerStep);
 		setImage(image);
 
 
 		if (imageToDrawOn == null) {
-			setManipulatingImage(new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB));
+			setManipulatingImage(new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB), null);
 		} else {
-			setManipulatingImage(imageToDrawOn);
+			setManipulatingImage(imageToDrawOn, graphicsToDrawOn);
 		}
 
 
 	}
 
 	@Override
-	protected void setManipulatingImage(BufferedImage imageToDrawOn) {
-		super.setManipulatingImage(imageToDrawOn);
+	protected void setManipulatingImage(BufferedImage imageToDrawOn,
+			Graphics2D graphicsToDrawOn) {
+		super.setManipulatingImage(imageToDrawOn, graphicsToDrawOn);
+
+		graphicsManipulated.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		calcCenter(imageWidth, imageHeight);
 	}
@@ -102,16 +116,28 @@ public class ImageRotating extends ImageManipulation {
 	 */
 	public void setDegreesPerStep(int degreesPerStep) {
 		this.degreesPerStep = degreesPerStep;
+		this.radiansPerStep = Math.toRadians(degreesPerStep);
+	}
+
+	/**
+	 * 0 = infinite rotation.
+	 * 
+	 * @param degreesToRotate
+	 */
+	public void setDegreesToRotate(int degreesToRotate) {
+		this.degreesToRotate = degreesToRotate;
 	}
 
 
 	@Override
 	public boolean isDone() {
-		return false;
+		return degreesToRotate != 0 && degreesRotated >= degreesToRotate;
 	}
 
 	@Override
 	public void reset() {
+		super.reset();
+		degreesRotated = 0;
 	}
 
 
@@ -124,12 +150,18 @@ public class ImageRotating extends ImageManipulation {
 	public BufferedImage rotate() {
 		clear();
 
-		graphicsManipulated.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		double radians = radiansPerStep;
 
-		graphicsManipulated.rotate(Math.toRadians(degreesPerStep), imageManipulatedWidth / 2, imageManipulatedHeight / 2);
-		graphicsManipulated.drawImage(image, centerWidth, centerHeight, null);
+		//Correct the angle if it would go over the maximal angle
+		if (degreesToRotate != 0 && degreesRotated + Math.abs(degreesPerStep) > degreesToRotate) {
+			radians = Math.toRadians(degreesToRotate - degreesRotated);
+		}
+
+		graphicsManipulated.rotate(radians, imageManipulatedWidth / 2, imageManipulatedHeight / 2);
+		graphicsManipulated.drawImage(image, centerX, centerY, null);
 		//graphicsManipulated.drawRect(0, 0, imageWidth-1, imageHeight-1);
+
+		degreesRotated += Math.abs(degreesPerStep);
 
 		return imageManipulated;
 	}
