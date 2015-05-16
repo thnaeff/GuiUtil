@@ -22,6 +22,7 @@ import ch.thn.guiutil.effects.imageanimation.ImageAnimationFading;
 import ch.thn.util.valuerange.ImageAlphaGradient;
 
 /**
+ * A label with an image which fades in and out.
  *
  * @author Thomas Naeff (github.com/thnaeff)
  *

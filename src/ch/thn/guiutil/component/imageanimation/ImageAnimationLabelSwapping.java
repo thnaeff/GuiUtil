@@ -25,6 +25,7 @@ import ch.thn.util.thread.ControlledRunnable.ControlledRunnableEvent;
 import ch.thn.util.thread.ControlledRunnable.ControlledRunnableListener;
 
 /**
+ * A label with swapping images.
  *
  * @author Thomas Naeff (github.com/thnaeff)
  *

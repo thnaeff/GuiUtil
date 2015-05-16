@@ -27,10 +27,12 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import ch.thn.guiutil.Loader;
-import ch.thn.guiutil.component.ImageAnimationLabelFading;
-import ch.thn.guiutil.component.ImageAnimationLabelRotating;
-import ch.thn.guiutil.effects.ImageAnimationFading;
-import ch.thn.guiutil.effects.ImageAnimationRotating;
+import ch.thn.guiutil.component.imageanimation.ImageAnimationLabelFading;
+import ch.thn.guiutil.component.imageanimation.ImageAnimationLabelRotating;
+import ch.thn.guiutil.component.imageanimation.ImageAnimationLabelSwapping;
+import ch.thn.guiutil.effects.imageanimation.ImageAnimationFading;
+import ch.thn.guiutil.effects.imageanimation.ImageAnimationRotating;
+import ch.thn.guiutil.effects.imageanimation.ImageAnimationSwapping;
 import ch.thn.util.thread.ControlledRunnable;
 import ch.thn.util.thread.ControlledRunnable.ControlledRunnableEvent;
 import ch.thn.util.thread.ControlledRunnable.ControlledRunnableListener;
@@ -45,8 +47,10 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 
 	private ImageAnimationLabelFading lImageAnimationLabelFading = null;
 	private ImageAnimationLabelRotating lImageAnimationLabelRotating = null;
+	private ImageAnimationLabelSwapping lImageAnimationLabelSwapping = null;
 	private JLabel lImageAnimationFading = null;
 	private JLabel lImageAnimationRotating = null;
+	private JLabel lImageAnimationSwapping = null;
 
 	private JButton bPauseRun = null;
 	private JButton bStop = null;
@@ -54,6 +58,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 
 	private ImageAnimationFading imageAnimationFading = null;
 	private ImageAnimationRotating imageAnimationRotating = null;
+	private ImageAnimationSwapping imageAnimationSwapping = null;
 
 
 	private static final ImageIcon[] icons = {
@@ -174,11 +179,48 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 
 		// ================================
 
+		lImageAnimationSwapping = new JLabel(ImageAnimationSwapping.class.getSimpleName() + ":");
+		lImageAnimationSwapping.setHorizontalTextPosition(SwingConstants.LEFT);
+
+		imageAnimationSwapping = new ImageAnimationSwapping(lImageAnimationSwapping, 20, 20);
+		imageAnimationSwapping.addControlledRunnableListener(this);
+
+		imageAnimationSwapping.addStep(icons[0].getImage(), 0, 500);
+		imageAnimationSwapping.addStep(icons[1].getImage(), 0, 500);
+		imageAnimationSwapping.addStep(icons[2].getImage(), 0, 500);
+
+		lImageAnimationSwapping.setIcon(new ImageIcon(imageAnimationSwapping.getOutputImage()));
+
+
+		Thread tSwapping = new Thread(imageAnimationSwapping);
+		tSwapping.start();
+
+		imageAnimationSwapping.go(3, false);
+
+
+		// ================================
+
+		lImageAnimationLabelSwapping = new ImageAnimationLabelSwapping(ImageAnimationLabelSwapping.class.getSimpleName() + ":");
+		lImageAnimationLabelSwapping.setHorizontalTextPosition(SwingConstants.LEFT);
+		lImageAnimationLabelSwapping.getImageAnimation().addControlledRunnableListener(this);
+
+		lImageAnimationLabelSwapping.addStep(icons[0].getImage(), 0, 2000);
+		lImageAnimationLabelSwapping.addStep(icons[1].getImage(), 0, 500);
+		lImageAnimationLabelSwapping.addStep(icons[2].getImage(), 1000, 500);
+
+		lImageAnimationLabelSwapping.setIcon(icons[5]);
+
+		lImageAnimationLabelSwapping.animate(3);
+
+
+		// ================================
 
 		add(lImageAnimationFading);
 		//add(lImageAnimationLabelFading);
 		//add(lImageAnimationRotating);
 		add(lImageAnimationLabelRotating);
+		//add(lImageAnimationSwapping);
+		add(lImageAnimationLabelSwapping);
 
 	}
 
@@ -280,6 +322,27 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 				break;
 			default:
 				System.out.print(lImageAnimationLabelRotating.getClass().getSimpleName() + ": ");
+				System.out.println("unknown");
+				break;
+			}
+		} else if (cr == imageAnimationSwapping) {
+			switch (e.getStateType()) {
+			case RUNNING:
+				System.out.print(imageAnimationSwapping.getClass().getSimpleName() + ": ");
+				System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped() + ", will stop=" + cr.willStop());
+				break;
+			case PAUSED:
+				System.out.print(imageAnimationSwapping.getClass().getSimpleName() + ": ");
+				System.out.println("paused=" + cr.isPaused());
+				break;
+			case RESET:
+				System.out.print(imageAnimationSwapping.getClass().getSimpleName() + ": ");
+				System.out.println("will reset=" + cr.willReset());
+				break;
+			case WAIT:
+				break;
+			default:
+				System.out.print(imageAnimationSwapping.getClass().getSimpleName() + ": ");
 				System.out.println("unknown");
 				break;
 			}

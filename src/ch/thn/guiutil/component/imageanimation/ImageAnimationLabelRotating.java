@@ -21,6 +21,7 @@ import javax.swing.Icon;
 import ch.thn.guiutil.effects.imageanimation.ImageAnimationRotating;
 
 /**
+ * A label with a rotating image.
  *
  * @author Thomas Naeff (github.com/thnaeff)
  *

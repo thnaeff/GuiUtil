@@ -46,7 +46,7 @@ import ch.thn.guiutil.component.extension.BorderContent;
 import ch.thn.guiutil.component.extension.BorderImage;
 import ch.thn.util.file.FileUtil;
 import ch.thn.util.file.PathWatcher;
-import ch.thn.util.file.PathWatcherListener;
+import ch.thn.util.file.PathWatcher.PathWatcherListener;
 
 /**
  * A text field for entering and selecting a file path, with browsing button,

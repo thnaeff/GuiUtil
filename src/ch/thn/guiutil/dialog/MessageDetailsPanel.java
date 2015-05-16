@@ -27,7 +27,7 @@ import javax.swing.JTextArea;
 import ch.thn.guiutil.component.CollapsiblePane;
 
 /**
- * A {@link JPanel} with two components: a text area on top to show the message, 
+ * A {@link JPanel} with two components: a text area on top to show the message,
  * and a {@link CollapsiblePane} below to show the message details
  *
  * @author Thomas Naeff (github.com/thnaeff)
@@ -35,11 +35,11 @@ import ch.thn.guiutil.component.CollapsiblePane;
  */
 public class MessageDetailsPanel extends JPanel {
 	private static final long serialVersionUID = -4566929387975388883L;
-	
-	
+
+
 	private CollapsiblePane collapsiblePane = null;
-	
-	
+
+
 	/**
 	 * 
 	 * 
@@ -48,34 +48,34 @@ public class MessageDetailsPanel extends JPanel {
 	 * @param detailsShown
 	 */
 	public MessageDetailsPanel(String message, String details, boolean detailsShown) {
-		
+
 		setLayout(new BorderLayout());
-		
+
 		JPanel p = new JPanel();
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		
+
 		JTextArea taMessage = new JTextArea(message);
 		taMessage.setEditable(false);
 		taMessage.setBackground(getBackground());
-		
+
 		JTextArea taDetails = new JTextArea(details);
 		taDetails.setEditable(false);
 		taDetails.setBackground(getBackground());
-		
+
 		JScrollPane spDetails = new JScrollPane(taDetails);
 		spDetails.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		spDetails.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		
-		
+
+
 		collapsiblePane = new CollapsiblePane("Details:", spDetails, !detailsShown);
-		
+
 		p.add(taMessage);
 		p.add(Box.createVerticalStrut(5));
 		p.add(collapsiblePane);
-		
+
 		add(p, BorderLayout.NORTH);
 	}
-	
-	
+
+
 
 }
