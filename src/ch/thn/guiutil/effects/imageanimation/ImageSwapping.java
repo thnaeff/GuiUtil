@@ -121,7 +121,7 @@ public class ImageSwapping extends ImageManipulation {
 		clear();
 
 		graphicsManipulated.drawImage(image, centerX, centerY, null);
-		graphicsManipulated.drawRect(0, 0, imageManipulatedWidth-1, imageManipulatedWidth-1);
+		//graphicsManipulated.drawRect(0, 0, imageManipulatedWidth-1, imageManipulatedWidth-1);
 
 		swapped = true;
 

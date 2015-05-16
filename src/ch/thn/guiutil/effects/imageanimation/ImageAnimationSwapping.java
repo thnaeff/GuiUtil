@@ -83,14 +83,15 @@ public class ImageAnimationSwapping extends ImageAnimation<ImageSwapping> {
 	 * 
 	 * 
 	 * @param image
+	 * @param timeout The timeout after swapping the image
 	 * @param delay The delay for the swap to start
 	 * @return The step index
 	 */
-	public int addStep(Image image, long delay) {
+	public int addStep(Image image, long timeout, long delay) {
 
 		return addAnimationStep(new AnimationStep(
 				new ImageSwapping(getOutputImage(), getOutputGraphics(), image),
-				0, delay, 0));
+				timeout, delay, 0));
 
 	}
 
