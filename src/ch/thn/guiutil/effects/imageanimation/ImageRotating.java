@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package ch.thn.guiutil.effects;
+package ch.thn.guiutil.effects.imageanimation;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -159,7 +159,7 @@ public class ImageRotating extends ImageManipulation {
 
 		graphicsManipulated.rotate(radians, imageManipulatedWidth / 2, imageManipulatedHeight / 2);
 		graphicsManipulated.drawImage(image, centerX, centerY, null);
-		//graphicsManipulated.drawRect(0, 0, imageWidth-1, imageHeight-1);
+		//graphicsManipulated.drawRect(0, 0, imageManipulatedWidth-1, imageManipulatedWidth-1);
 
 		degreesRotated += Math.abs(degreesPerStep);
 

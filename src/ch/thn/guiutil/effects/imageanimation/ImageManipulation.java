@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package ch.thn.guiutil.effects;
+package ch.thn.guiutil.effects.imageanimation;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
