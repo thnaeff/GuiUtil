@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 
 import ch.thn.guiutil.Loader;
 import ch.thn.guiutil.component.ImageAnimationLabelFading;
+import ch.thn.guiutil.component.ImageAnimationLabelRotating;
 import ch.thn.guiutil.effects.ImageAnimationFading;
 import ch.thn.guiutil.effects.ImageAnimationRotating;
 import ch.thn.util.thread.ControlledRunnable;
@@ -43,6 +44,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 	private static final long serialVersionUID = 8762214384151119341L;
 
 	private ImageAnimationLabelFading lImageAnimationLabelFading = null;
+	private ImageAnimationLabelRotating lImageAnimationLabelRotating = null;
 	private JLabel lImageAnimationFading = null;
 	private JLabel lImageAnimationRotating = null;
 
@@ -154,12 +156,29 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 
 		// ================================
 
+
+		lImageAnimationLabelRotating = new ImageAnimationLabelRotating(ImageAnimationLabelRotating.class.getSimpleName() + ":");
+		lImageAnimationLabelRotating.setHorizontalTextPosition(SwingConstants.LEFT);
+		lImageAnimationLabelRotating.getImageAnimation().addControlledRunnableListener(this);
+
+		lImageAnimationLabelRotating.setIcon(icons[5]);
+		lImageAnimationLabelRotating.addStep(360, 5, 50, 0, 0);
+		lImageAnimationLabelRotating.addStep(360, -5, 50, 0, 0);
+
+
+
+		lImageAnimationLabelRotating.animate(3);
+
+		lImageAnimationLabelRotating.setIcon(icons[4]);
+		lImageAnimationLabelRotating.animate(3);
+
 		// ================================
 
 
 		add(lImageAnimationFading);
-		add(lImageAnimationLabelFading);
-		add(lImageAnimationRotating);
+		//add(lImageAnimationLabelFading);
+		//add(lImageAnimationRotating);
+		add(lImageAnimationLabelRotating);
 
 	}
 
@@ -222,7 +241,7 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 				System.out.println("unknown");
 				break;
 			}
-		}if (cr == imageAnimationRotating) {
+		} else if (cr == imageAnimationRotating) {
 			switch (e.getStateType()) {
 			case RUNNING:
 				System.out.print(imageAnimationRotating.getClass().getSimpleName() + ": ");
@@ -240,6 +259,27 @@ public class EffectsTest extends JPanel implements ControlledRunnableListener, A
 				break;
 			default:
 				System.out.print(imageAnimationRotating.getClass().getSimpleName() + ": ");
+				System.out.println("unknown");
+				break;
+			}
+		} else if (cr == lImageAnimationLabelRotating.getImageAnimation()) {
+			switch (e.getStateType()) {
+			case RUNNING:
+				System.out.print(lImageAnimationLabelRotating.getClass().getSimpleName() + ": ");
+				System.out.println("running=" + cr.isRunning() + ", stopped=" + cr.isStopped() + ", will stop=" + cr.willStop());
+				break;
+			case PAUSED:
+				System.out.print(lImageAnimationLabelRotating.getClass().getSimpleName() + ": ");
+				System.out.println("paused=" + cr.isPaused());
+				break;
+			case RESET:
+				System.out.print(lImageAnimationLabelRotating.getClass().getSimpleName() + ": ");
+				System.out.println("will reset=" + cr.willReset());
+				break;
+			case WAIT:
+				break;
+			default:
+				System.out.print(lImageAnimationLabelRotating.getClass().getSimpleName() + ": ");
 				System.out.println("unknown");
 				break;
 			}
