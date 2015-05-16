@@ -272,7 +272,9 @@ public abstract class ImageAnimation<M extends ImageManipulation> extends Repeat
 
 			repaintComponentOrArea();
 
-			controlledWait(animationStep.timeout);
+			if (animationStep.timeout != 0) {
+				controlledWait(animationStep.timeout);
+			}
 
 		}	//End all steps until done
 
