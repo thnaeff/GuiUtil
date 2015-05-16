@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package ch.thn.guiutil.component;
+package ch.thn.guiutil.component.imageanimation;
 
 import java.awt.image.BufferedImage;
 
@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import ch.thn.guiutil.ImageUtil;
-import ch.thn.guiutil.effects.ImageAnimation;
+import ch.thn.guiutil.effects.imageanimation.ImageAnimation;
 
 /**
  * This is the base class for a {@link JLabel} whose icon can be animated.<br />
@@ -193,8 +193,8 @@ public abstract class ImageAnimationLabel<A extends ImageAnimation<?>> extends J
 	public void setIcon(Icon icon) {
 
 		//setIcon is also called when constructing JLabel -> imageAnimation might not
-		//be initialized
-		if (imageAnimation != null) {
+		//be initialized. Only pause when initialized and not paused yet.
+		if (imageAnimation != null && !imageAnimation.isPaused()) {
 			//Pause the animation wherever it is
 			imageAnimation.pause(true);
 		}
