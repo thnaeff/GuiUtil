@@ -32,6 +32,14 @@ public class ImageAnimationLabelFading extends ImageAnimationLabel<ImageAnimatio
 	/**
 	 * 
 	 * 
+	 */
+	public ImageAnimationLabelFading() {
+		super();
+	}
+
+	/**
+	 * 
+	 * 
 	 * @param icon
 	 */
 	public ImageAnimationLabelFading(Icon icon) {

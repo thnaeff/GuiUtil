@@ -35,6 +35,14 @@ public class ImageAnimationLabelSwapping extends ImageAnimationLabel<ImageAnimat
 	/**
 	 * 
 	 * 
+	 */
+	public ImageAnimationLabelSwapping() {
+		super();
+	}
+
+	/**
+	 * 
+	 * 
 	 * @param icon
 	 */
 	public ImageAnimationLabelSwapping(Icon icon) {

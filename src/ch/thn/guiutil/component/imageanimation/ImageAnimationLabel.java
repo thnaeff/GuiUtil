@@ -52,6 +52,16 @@ public abstract class ImageAnimationLabel<A extends ImageAnimation<?>> extends J
 	/**
 	 * 
 	 * 
+	 * @see JLabel
+	 */
+	public ImageAnimationLabel() {
+		super();
+		init();
+	}
+
+	/**
+	 * 
+	 * 
 	 * @param icon
 	 * @see JLabel
 	 */

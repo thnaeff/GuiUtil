@@ -31,6 +31,14 @@ public class ImageAnimationLabelRotating extends ImageAnimationLabel<ImageAnimat
 	/**
 	 * 
 	 * 
+	 */
+	public ImageAnimationLabelRotating() {
+		super();
+	}
+
+	/**
+	 * 
+	 * 
 	 * @param icon
 	 */
 	public ImageAnimationLabelRotating(Icon icon) {
