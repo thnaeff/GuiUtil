@@ -112,6 +112,19 @@ public class ImageAnimationLabelSwapping extends ImageAnimationLabel<ImageAnimat
 	}
 
 	/**
+	 * 
+	 * 
+	 * @param images
+	 * @param timeout
+	 * @param delay
+	 */
+	public void addSteps(Image[] images, long timeout, long delay) {
+		for (Image image : images) {
+			addStep(image, timeout, delay);
+		}
+	}
+
+	/**
 	 * Defines the icon this component will display when not running. Setting a
 	 * icon here will stop the animation.<br />
 	 * This icon will only be shown when the animation is not running.
