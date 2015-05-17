@@ -36,12 +36,11 @@ import javax.swing.event.AncestorListener;
 
 
 /**
- * This border content class can be used to give any {@link JComponent} the 
- * ability to have one or more other {@link JComponent}s within the border of 
- * that component.<br>
+ * This border content class can be used to give any {@link JComponent} the
+ * ability to have one or more other {@link JComponent}s within the border.<br>
  * <br>
- * Lets look at the example of a {@link JTextField}. This is about how a 
- * {@link JTextField} is set up (the visible border with "-" and "|", and the 
+ * Lets look at the example of a {@link JTextField}. This is about how an original
+ * {@link JTextField} is set up (the visible border with "-" and "|", and the
  * actual invisible text field bounds with "="):
  * <pre>
  * |---Text field border---|
@@ -52,21 +51,21 @@ import javax.swing.event.AncestorListener;
  * </pre>
  * 
  * <br>
- * Now, how about we want to add a component (a {@link JButton} for example) to the right 
- * of the text field, but we want the button to appear within the border? One 
- * solution would be to create a class that extends {@link JPanel} with a border layout, then add the 
- * {@link JTextField} and the {@link JButton} to that border layout, remove the 
- * border from the {@link JTextField} and add the border to the {@link JPanel}. 
+ * Now, how about we want to add a component (a {@link JButton} for example) to the right
+ * of the text field, but we want the button to appear within the border? One
+ * solution would be to create a class that extends {@link JPanel} with a border layout, then add the
+ * {@link JTextField} and the {@link JButton} to that border layout, remove the
+ * border from the {@link JTextField} and add the border to the {@link JPanel}.
  * This would look just fine and exactly as expected.<br>
- * But the drawback would be that we have to deal with a {@link JPanel} now (since 
- * the {@link JTextField} is within that {@link JPanel}). All the {@link JTextField} 
- * methods (and inherited methods) which are needed would have to be implemented 
+ * But the drawback would be that we have to deal with a {@link JPanel} now (since
+ * the {@link JTextField} is within that {@link JPanel}). All the {@link JTextField}
+ * methods (and inherited methods) which are needed would have to be implemented
  * in the new class.<br>
  * <br>
- * The problem is solved with this {@link BorderContent} class. It class allows 
- * the adding of any {@link JComponent} which is then placed between the border 
+ * The problem is solved with this {@link BorderContent} class. It class allows
+ * the adding of any {@link JComponent} which is then placed between the border
  * and the actual object.<br>
- * This is how adding a {@link JButton} "But" to a {@link JTextField} would look 
+ * This is how adding a {@link JButton} "But" to a {@link JTextField} would look
  * like when the {@link BorderContent} class is used:
  * <pre><code>
  * |-----Text field border-------|
@@ -76,7 +75,7 @@ import javax.swing.event.AncestorListener;
  * |-----------------------------|
  * </code></pre>
  * 
- * Now we have the benefit of still having a {@link JTextField} object, only that 
+ * Now we have the benefit of still having a {@link JTextField} object, only that
  * it appears with the added {@link JButton}.<br>
  * <br>
  * ====== USAGE ======<br>
@@ -84,7 +83,7 @@ import javax.swing.event.AncestorListener;
  * To use the {@link BorderContent} class the following steps are needed:<br>
  * <ul>
  * 	<li>In your class, create an instance of {@link BorderContent}</li>
- *	<li>Add components to your {@link BorderContent} object, using the 
+ *	<li>Add components to your {@link BorderContent} object, using the
  *{@link #addComponent(JComponent, int)} method. </li>
  * </ul>
  * 
@@ -97,31 +96,31 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	public static final int EAST = 1;
 	public static final int SOUTH = 2;
 	public static final int WEST = 3;
-	
+
 	public static final int ORIENTATIONS_MAX = 3;
-	
+
 	private JComponent extendedComponent = null;
-	
-	private JComponent[] components = new JComponent[ORIENTATIONS_MAX + 1];
-	
-	private int[] margins = new int[ORIENTATIONS_MAX + 1];
-		
-	private ExtendedBorder extendedBorder = null;
-	
-	private Insets borderInsets = new Insets(0, 0, 0, 0);
-	
-	
+
+	private final JComponent[] components = new JComponent[ORIENTATIONS_MAX + 1];
+
+	private final int[] margins = new int[ORIENTATIONS_MAX + 1];
+
+	private PaddingBorder extendedBorder = null;
+
+	private final Insets borderInsets = new Insets(0, 0, 0, 0);
+
+
 	/**
 	 * Creates a new {@link BorderContent} with a value of 0 for all margins.
 	 * 
-	 * @param component 
+	 * @param component
 	 */
 	public BorderContent(JComponent component) {
 		this(component, 0, 0, 0, 0);
 	}
-	
+
 	/**
-	 * Creates a new {@link BorderContent} using the given margins which are 
+	 * Creates a new {@link BorderContent} using the given margins which are
 	 * applied around the extended component.
 	 * 
 	 * @param component
@@ -133,11 +132,11 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	public BorderContent(JComponent component, int marginNorth, int marginEast, int marginSouth, int marginWest) {
 		initialize(component, marginNorth, marginEast, marginSouth, marginWest);
 	}
-	
+
 	/**
 	 * 
 	 * 
-	 * @param panel The panel to add content within its border. Only a panel 
+	 * @param panel The panel to add content within its border. Only a panel
 	 * with a BorderLayout can be used.
 	 * @param marginNorth
 	 * @param marginEast
@@ -148,10 +147,10 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (!(panel.getLayout() instanceof BorderLayout) ){
 			throw new ComponentExtensionError("Only a JPanel with BorderLayout can be used.");
 		}
-		
+
 		initialize(panel, marginNorth, marginEast, marginSouth, marginWest);
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -164,19 +163,19 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	private void initialize(JComponent component, int marginNorth, int marginEast, int marginSouth, int marginWest) {
 		this.extendedComponent = component;
 		setMargins(marginNorth, marginEast, marginSouth, marginWest);
-		
-		extendedBorder = new ExtendedBorder(extendedComponent);
-		
+
+		extendedBorder = new PaddingBorder(extendedComponent);
+
 		extendedComponent.addAncestorListener(this);
 		extendedComponent.addPropertyChangeListener(this);
 		extendedComponent.addComponentListener(this);
-		
+
 		updateBorder();
 		updateInsets();
 		updateComponents();
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * @param marginNorth
@@ -190,10 +189,10 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		this.margins[SOUTH] = marginSouth;
 		this.margins[WEST] = marginWest;
 	}
-	
+
 	/**
-	 * Adds a new component to the object of which this {@link BorderContent} is for. 
-	 * The position of the component has to be specified with one of the available 
+	 * Adds a new component to the object of which this {@link BorderContent} is for.
+	 * The position of the component has to be specified with one of the available
 	 * positions:<br>
 	 * {@link BorderContent}.{@link #NORTH}<br>
 	 * {@link BorderContent}.{@link #EAST}<br>
@@ -207,31 +206,31 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (extendedComponent == null) {
 			throw new ComponentExtensionError(this.getClass().getCanonicalName() + " has not yet been initialized.");
 		}
-		
+
 		if (orientation > ORIENTATIONS_MAX || orientation < 0) {
 			throw new ComponentExtensionError("Orientation " + orientation + " does not exist. Use NORTH, EAST, SOUTH or WEST.");
 		}
-		
+
 		if (component == null) {
 			return;
 		}
-		
+
 		if (components[orientation] != null) {
 			//Remove any old component
 			this.extendedComponent.remove(components[orientation]);
 		}
-		
+
 		components[orientation] = component;
 
 		this.extendedComponent.add(component);
-		
-		//If the component is added to a JTextField for example, the mouse 
+
+		//If the component is added to a JTextField for example, the mouse
 		//pointer over the added component would have the text cursor
 		component.setCursor(Cursor.getDefaultCursor());
-		
+
 		component.addComponentListener(this);
 	}
-	
+
 	/**
 	 * Removes the given component
 	 * 
@@ -241,25 +240,25 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (extendedComponent == null) {
 			throw new ComponentExtensionError(this.getClass().getCanonicalName() + " has not yet been initialized.");
 		}
-		
+
 		if (component == null) {
 			return;
 		}
-		
+
 		//Look for the component in all the orientations
 		for (int i = 0; i < ORIENTATIONS_MAX; i++) {
 			if (components[i] != null && components[i].equals(component)) {
 				components[i] = null;
 			}
 		}
-		
+
 		extendedComponent.remove(component);
-		
+
 		component.removeComponentListener(this);
-		
+
 		updateInsets();
 	}
-	
+
 	/**
 	 * Returns the actual border without modifications (the additional insets etc.)
 	 * 
@@ -273,7 +272,7 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 			return b;
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -282,37 +281,37 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (!extendedComponent.isShowing()) {
 			return;
 		}
-		
+
 		borderInsets.top = margins[NORTH];
 		borderInsets.right = margins[EAST];
 		borderInsets.bottom = margins[SOUTH];
 		borderInsets.left = margins[WEST];
-		
+
 		if (components[NORTH] != null) {
-			
+
 			borderInsets.top += getComponentHeight(NORTH);
 		}
-		
+
 		if (components[EAST] != null) {
-			
+
 			borderInsets.right += getComponentWidth(EAST);
 		}
-		
+
 		if (components[SOUTH] != null) {
-			
+
 			borderInsets.bottom += getComponentHeight(SOUTH);
-			
+
 		}
-		
+
 		if (components[WEST] != null) {
-			
+
 			borderInsets.left += getComponentWidth(WEST);
-			
+
 		}
-		
+
 		extendedBorder.setInsets(borderInsets);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -321,47 +320,47 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (!extendedComponent.isShowing()) {
 			return;
 		}
-		
+
 		if (components[NORTH] != null) {
 			int x = getLeftEdge();
 			int y = getTopEdge();
 			int width = getWidth();
 			int height = getComponentHeight(NORTH);
-			
+
 			components[NORTH].setBounds(x, y, width, height);
 		}
-		
+
 		if (components[EAST] != null) {
 			int x = getLeftEdge() + getWidth() - getComponentWidth(EAST);
-			int y = getTopEdge() + (borderInsets.top - margins[NORTH]);
+			int y = getTopEdge() + borderInsets.top - margins[NORTH];
 			int width = getComponentWidth(EAST);
 			int height = getHeight() - getComponentHeight(NORTH) - getComponentHeight(SOUTH);
-			
+
 			components[EAST].setBounds(x, y, width, height);
 		}
-		
-		if (components[SOUTH] != null) {	
+
+		if (components[SOUTH] != null) {
 			int x = getLeftEdge();
 			int y = getTopEdge() + getHeight() - getComponentHeight(SOUTH);
 			int width = getWidth();
 			int height = getComponentHeight(SOUTH);
-			
+
 			components[SOUTH].setBounds(x, y, width, height);
 		}
-		
-		if (components[WEST] != null) {	
+
+		if (components[WEST] != null) {
 			int x = getLeftEdge();
-			int y = getTopEdge() + (borderInsets.top - margins[NORTH]);
+			int y = getTopEdge() + borderInsets.top - margins[NORTH];
 			int width = getComponentWidth(WEST);
 			int height = getHeight() - getComponentHeight(NORTH) - getComponentHeight(SOUTH);
-			
+
 			components[WEST].setBounds(x, y, width, height);
 		}
-		
-		
+
+
 		extendedComponent.validate();
 	}
-	
+
 	/**
 	 * Returns the width of the component at the given position
 	 * 
@@ -372,23 +371,23 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (components[position] == null) {
 			return 0;
 		}
-		
+
 		Dimension dim = components[position].getPreferredSize();
 		Dimension dimMax = components[position].getMaximumSize();
 		Dimension dimMin = components[position].getMinimumSize();
-		
+
 		int height = (int)dim.getHeight();
-		
+
 		//Obey max/min dimension
 		if (height > dimMax.getHeight()) {
 			height = (int)dimMax.getHeight();
 		} else if (height < dimMin.getHeight()) {
 			height = (int)dimMin.getHeight();
 		}
-		
+
 		return height;
 	}
-	
+
 	/**
 	 * Returns the height of the component at the given position
 	 * 
@@ -399,24 +398,24 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		if (components[position] == null) {
 			return 0;
 		}
-		
+
 		Dimension dim = components[position].getPreferredSize();
 		Dimension dimMax = components[position].getMaximumSize();
 		Dimension dimMin = components[position].getMinimumSize();
-		
+
 		int width = (int)dim.getWidth();
-		
+
 		//Obey max/min dimension
 		if (width > dimMax.getWidth()) {
 			width = (int)dimMax.getWidth();
 		} else if (width < dimMin.getWidth()) {
 			width = (int)dimMin.getWidth();
 		}
-		
+
 		return width;
-		
+
 	}
-	
+
 	/**
 	 * Returns the left edge within the border
 	 * 
@@ -426,7 +425,7 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		Insets originalBorderInstes = extendedBorder.getOriginalInsets();
 		return originalBorderInstes.left;
 	}
-	
+
 	/**
 	 * Returns the top edge within the border
 	 * 
@@ -436,7 +435,7 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		Insets originalBorderInstes = extendedBorder.getOriginalInsets();
 		return originalBorderInstes.top;
 	}
-	
+
 	/**
 	 * Returns the width of the space within the borders
 	 * 
@@ -445,11 +444,11 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	private int getWidth() {
 		Dimension componentDimensions = extendedComponent.getSize();
 		Insets originalBorderInstes = extendedBorder.getOriginalInsets();
-		
-		return (int)componentDimensions.getWidth() 
+
+		return (int)componentDimensions.getWidth()
 				- originalBorderInstes.left - originalBorderInstes.right;
 	}
-	
+
 	/**
 	 * Returns the height of the space within the borders
 	 * 
@@ -458,43 +457,43 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	private int getHeight() {
 		Dimension componentDimensions = extendedComponent.getSize();
 		Insets originalBorderInstes = extendedBorder.getOriginalInsets();
-		
-		return (int)componentDimensions.getHeight() 
+
+		return (int)componentDimensions.getHeight()
 				- originalBorderInstes.top - originalBorderInstes.bottom;
 	}
-	
+
 	/**
 	 * 
 	 */
 	private void updateBorder() {
 		Border b = extendedComponent.getBorder();
-				
-		if (b != null && b instanceof ExtendedBorder) {
-			//An extended border has already been set from somewhere else. Make sure 
+
+		if (b != null && b instanceof PaddingBorder) {
+			//An extended border has already been set from somewhere else. Make sure
 			//it has all the values we need and use it from now on.
-			
-			ExtendedBorder existing = (ExtendedBorder)b;
-			
+
+			PaddingBorder existing = (PaddingBorder)b;
+
 			extendedBorder = existing;
-		} else {			
+		} else {
 			//Extended border is not set yet
 			extendedBorder.setBorder(b);
-			
+
 			extendedComponent.setBorder(extendedBorder);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Updates the layout of the border content.<br>
-	 * If one of the border components is changed but the change does not trigger 
-	 * one of the events which would update the border content (ancestor, 
-	 * component or property events), then this method could help updating the 
+	 * If one of the border components is changed but the change does not trigger
+	 * one of the events which would update the border content (ancestor,
+	 * component or property events), then this method could help updating the
 	 * bounds of the border components.
 	 */
 	public void updateContent() {
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				updateInsets();
@@ -504,9 +503,9 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	}
 
 	@Override
-	public void ancestorAdded(AncestorEvent event) {		
+	public void ancestorAdded(AncestorEvent event) {
 		SwingUtilities.invokeLater(new Runnable() {
-			
+
 			@Override
 			public void run() {
 				updateBorder();
@@ -528,7 +527,7 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals("border")) {
 			SwingUtilities.invokeLater(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					updateBorder();
@@ -539,7 +538,7 @@ public class BorderContent implements AncestorListener, PropertyChangeListener, 
 		} else {
 			updateContent();
 		}
-		
+
 
 	}
 

@@ -27,12 +27,12 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
 /**
- * This class draws an additional border around the given component. The additional 
- * border has the thickness set with {@link #setThickness(int, int, int, int)} and 
- * it has the same color like the background component, making the border invisible.<br>
+ * This class creates a padding around the given component. The padding
+ * has the thickness set with {@link #setThickness(int, int, int, int)} and
+ * it has the same color like the background component, making the padding invisible.<br>
  * <br>
- * The following "picture" shows it on the example of a text field. This is about how a 
- * {@link JTextField} is set up (the visible border outer bounds with "-" and "|", and the 
+ * The following "picture" shows it on the example of a text field. This is about how a
+ * {@link JTextField} is set up (the visible border outer bounds with "-" and "|", and the
  * actual invisible text field bounds with "="):
  * <pre>
  * |---Text field border---|
@@ -42,13 +42,13 @@ import javax.swing.event.AncestorListener;
  * |-----------------------|
  * </pre>
  * 
- * The {@link BorderExtension} then creates a custom {@link CompoundBorder} (wrapped 
- * in the class {@link ExtendedBorder}) with the current border as inner border 
- * and with an additional border as outer border. The outer border has the thickness 
- * of the values set with {@link #setThickness(int, int, int, int)}. The following 
- * shows how the result of a {@link BorderExtension} could look like:
+ * The {@link ComponentPadding} then creates a custom {@link CompoundBorder} (wrapped
+ * in the class {@link PaddingBorder}) with the current border as inner border
+ * and with an additional border as outer border. The outer border has the thickness
+ * of the values set with {@link #setThickness(int, int, int, int)}. The following
+ * shows how the result of a {@link ComponentPadding} could look like:
  *  * <pre>
- * |-------Outer border----------|
+ * |--Outer border (invisible)---|
  * |                             |
  * |                             |
  * |   |---Text field border---| |
@@ -58,16 +58,16 @@ import javax.swing.event.AncestorListener;
  * |   |-----------------------| |
  * |-----------------------------|
  * </pre>
- * Since the outer border color is always set to the same color of the parent 
- * component, the outer border is invisible. This gives a padding around the text 
- * field which could even be used for drawing (as used for {@link BorderImage}).<br>
+ * Since the outer border color is always set to the same color of the parent
+ * component, the outer border is invisible. This gives a padding around the text
+ * field which can for example be used for drawing as used for {@link BorderImage}.<br>
  * <br>
  * ====== USAGE ======<br>
  * <br>
- * To use the {@link BorderExtension} class the following steps are needed:<br>
+ * To use the {@link ComponentPadding} class the following steps are needed:<br>
  * <ul>
- * 	<li>In your class, create an instance of {@link BorderExtension}</li>
- *	<li>Use the {@link #setThickness(int, int, int, int)} to define the thickness 
+ * 	<li>In your class, create an instance of {@link ComponentPadding}</li>
+ *	<li>Use the {@link #setThickness(int, int, int, int)} to define the thickness
  *of the border around the component.</li>
  * </ul>
  * 
@@ -76,37 +76,37 @@ import javax.swing.event.AncestorListener;
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class BorderExtension implements AncestorListener, PropertyChangeListener {
-	
+public class ComponentPadding implements AncestorListener, PropertyChangeListener {
+
 	public static final int NORTH = 0;
 	public static final int EAST = 1;
 	public static final int SOUTH = 2;
 	public static final int WEST = 3;
-	
+
 	protected static final int ORIENTATIONS_MAX = 3;
-	
-	
+
+
 	private JComponent extendedComponent = null;
-	
-	private ExtendedBorder extendedBorder = null;
-	
-	private int[] thickness = new int[BorderExtension.ORIENTATIONS_MAX + 1];
-	
+
+	private PaddingBorder extendedBorder = null;
+
+	private final int[] thickness = new int[ComponentPadding.ORIENTATIONS_MAX + 1];
+
 	/**
 	 * 
 	 * @param component
 	 */
-	public BorderExtension(JComponent component) {
+	public ComponentPadding(JComponent component) {
 		this.extendedComponent = component;
-		
-		extendedBorder = new ExtendedBorder(component);
-		
+
+		extendedBorder = new PaddingBorder(component);
+
 		extendedComponent.addAncestorListener(this);
 		extendedComponent.addPropertyChangeListener(this);
-		
+
 		updateBorder();
 	}
-	
+
 	/**
 	 * 
 	 * 
@@ -116,14 +116,14 @@ public class BorderExtension implements AncestorListener, PropertyChangeListener
 	 * @param left
 	 */
 	public void setThickness(int top, int right, int bottom, int left) {
-		thickness[BorderExtension.NORTH] = top;
-		thickness[BorderExtension.EAST] = right;
-		thickness[BorderExtension.SOUTH] = bottom;
-		thickness[BorderExtension.WEST] = left;
-		
+		thickness[ComponentPadding.NORTH] = top;
+		thickness[ComponentPadding.EAST] = right;
+		thickness[ComponentPadding.SOUTH] = bottom;
+		thickness[ComponentPadding.WEST] = left;
+
 		updateBorder();
 	}
-	
+
 	/**
 	 * Returns the actual border without modifications
 	 * 
@@ -137,29 +137,29 @@ public class BorderExtension implements AncestorListener, PropertyChangeListener
 			return b;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
-	protected ExtendedBorder getExtendedBorder() {
+	protected PaddingBorder getExtendedBorder() {
 		return extendedBorder;
 	}
-	
+
 	/**
 	 * 
 	 */
 	private void updateBorder() {
 		Border b = extendedComponent.getBorder();
-		
-		if (b != null && b instanceof ExtendedBorder) {
-			//An extended border has already been set from somewhere else. Make sure 
+
+		if (b != null && b instanceof PaddingBorder) {
+			//An extended border has already been set from somewhere else. Make sure
 			//it has all the values we need and use it from now on.
-			
-			ExtendedBorder existing = (ExtendedBorder)b;
+
+			PaddingBorder existing = (PaddingBorder)b;
 			existing.showOuterBorder(true);
 			existing.setThickness(thickness);
-			
+
 			extendedBorder = existing;
 		} else {
 			//Extended border is not set yet
@@ -168,14 +168,14 @@ public class BorderExtension implements AncestorListener, PropertyChangeListener
 			extendedBorder.showOuterBorder(true);
 			extendedComponent.setBorder(extendedBorder);
 		}
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	@Override
-	public void ancestorAdded(AncestorEvent event) {		
+	public void ancestorAdded(AncestorEvent event) {
 		updateBorder();
 	}
 
@@ -189,12 +189,12 @@ public class BorderExtension implements AncestorListener, PropertyChangeListener
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		
+
 		if (evt.getPropertyName().equals("border")) {
 			updateBorder();
 		}
-		
+
 	}
-	
+
 
 }
