@@ -18,15 +18,23 @@ package ch.thn.guiutil.effects;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import ch.thn.guiutil.Loader;
+import ch.thn.guiutil.component.CenteredPanel;
+import ch.thn.guiutil.component.PlainButton;
 import ch.thn.util.ColorUtil;
 import ch.thn.util.html.HtmlUtil;
 
@@ -39,7 +47,7 @@ import ch.thn.util.html.HtmlUtil;
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class BusyOverlay extends OverlayPanel implements ActionListener {
+public class BusyOverlay extends OverlayPanel implements ActionListener, MouseListener {
 	private static final long serialVersionUID = 1013412074114453291L;
 
 
@@ -47,6 +55,11 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 	private static boolean setVisible = false;
 
 	private JLabel lBusy = null;
+
+	private CenteredPanel pCentered = null;
+	private JPanel pContent = null;
+
+	private PlainButton bCancel = null;
 
 	private Timer tSetVisible = null;
 
@@ -56,13 +69,23 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 
 	/**
 	 * 
+	 * 
 	 * @param rootPane
 	 * @param busyText
+	 * @param cancelButton
 	 */
-	public BusyOverlay(JLayeredPane rootPane, String busyText) {
+	public BusyOverlay(JLayeredPane rootPane, String busyText, boolean cancelButton) {
 		super(rootPane, false);
 
 		setLayout(new BorderLayout());
+
+		pCentered = new CenteredPanel();
+		pCentered.setOpaque(false);
+
+		pContent = new JPanel(new BorderLayout());
+		pContent.setOpaque(false);
+		//A maximum size, needed for the CenteredPanel
+		pContent.setMaximumSize(new Dimension(500, 300));
 
 		tSetVisible = new Timer(0, this);
 
@@ -70,7 +93,19 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 		lBusy.setVerticalTextPosition(JLabel.BOTTOM);
 		lBusy.setHorizontalTextPosition(JLabel.CENTER);
 
-		add(lBusy, BorderLayout.CENTER);
+		bCancel = new PlainButton("[Cancel]");
+		bCancel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		bCancel.addMouseListener(this);
+
+
+		pContent.add(lBusy, BorderLayout.CENTER);
+
+		if (cancelButton) {
+			pContent.add(bCancel, BorderLayout.SOUTH);
+		}
+
+		pCentered.setCenteredContent(pContent);
+		add(pCentered, BorderLayout.CENTER);
 
 		setLoadingText(busyText);
 	}
@@ -160,6 +195,17 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 	}
 
 	/**
+	 * Returns the cancel button which is shown in the overlay. An action listener
+	 * should be added to this button to allow the user to cancel the operation and
+	 * to avoid that the loading overlay locks the application from being used.
+	 * 
+	 * @return
+	 */
+	public JButton getCancelButton() {
+		return bCancel;
+	}
+
+	/**
 	 * 
 	 * @param visible
 	 */
@@ -190,6 +236,37 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 			setVisible(setVisible);
 		}
 
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		if (e.getSource() == bCancel) {
+			bCancel.setForeground(Color.white);
+		}
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		if (e.getSource() == bCancel) {
+			bCancel.setForeground(Color.black);
+		}
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
 	}
 
 
