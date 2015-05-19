@@ -39,7 +39,7 @@ import ch.thn.util.html.HtmlUtil;
  * @author Thomas Naeff (github.com/thnaeff)
  *
  */
-public class LoadingOverlay extends OverlayPanel implements ActionListener {
+public class BusyOverlay extends OverlayPanel implements ActionListener {
 	private static final long serialVersionUID = 1013412074114453291L;
 
 
@@ -59,7 +59,7 @@ public class LoadingOverlay extends OverlayPanel implements ActionListener {
 	 * @param rootPane
 	 * @param loadingText
 	 */
-	public LoadingOverlay(JLayeredPane rootPane, String loadingText) {
+	public BusyOverlay(JLayeredPane rootPane, String loadingText) {
 		super(rootPane, false);
 
 		setLayout(new BorderLayout());
