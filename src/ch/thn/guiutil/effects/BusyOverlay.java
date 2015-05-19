@@ -46,45 +46,45 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 	private static boolean isVisible = false;
 	private static boolean setVisible = false;
 
-	private JLabel lLoading = null;
+	private JLabel lBusy = null;
 
 	private Timer tSetVisible = null;
 
 	private final ImageIcon icon = Loader.loadIcon("/32x32/loading.gif");
 
-	private String loadingText = null;
+	private String busyText = null;
 
 	/**
 	 * 
 	 * @param rootPane
-	 * @param loadingText
+	 * @param busyText
 	 */
-	public BusyOverlay(JLayeredPane rootPane, String loadingText) {
+	public BusyOverlay(JLayeredPane rootPane, String busyText) {
 		super(rootPane, false);
 
 		setLayout(new BorderLayout());
 
 		tSetVisible = new Timer(0, this);
 
-		lLoading = new JLabel(icon);
-		lLoading.setVerticalTextPosition(JLabel.BOTTOM);
-		lLoading.setHorizontalTextPosition(JLabel.CENTER);
+		lBusy = new JLabel(icon);
+		lBusy.setVerticalTextPosition(JLabel.BOTTOM);
+		lBusy.setHorizontalTextPosition(JLabel.CENTER);
 
-		add(lLoading, BorderLayout.CENTER);
+		add(lBusy, BorderLayout.CENTER);
 
-		setLoadingText(loadingText);
+		setLoadingText(busyText);
 	}
 
 
 	/**
-	 * Sets the text shown under the loading icon. The text is formatted with some
+	 * Sets the text shown under the busy icon. The text is formatted with some
 	 * html/css, thus a linebreak can be added with &lt;br&gt;.
 	 * 
-	 * @param loadingText
+	 * @param busyText
 	 */
-	public void setLoadingText(String loadingText) {
-		this.loadingText = loadingText;
-		lLoading.setText(HtmlUtil.textHtml(textFormatted(loadingText, 4, ColorUtil.colorToHex(Color.white), true, true)));
+	public void setLoadingText(String busyText) {
+		this.busyText = busyText;
+		lBusy.setText(HtmlUtil.textHtml(textFormatted(busyText, 4, ColorUtil.colorToHex(Color.white), true, true)));
 	}
 
 	/**
@@ -92,8 +92,8 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 	 * 
 	 * @return
 	 */
-	public String getLoadingText() {
-		return loadingText;
+	public String getBusyText() {
+		return busyText;
 	}
 
 	/**
@@ -101,11 +101,11 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 	 * 
 	 * @param hide
 	 */
-	public void hideLoadingIcon(boolean hide) {
+	public void hideBusyIcon(boolean hide) {
 		if (hide) {
-			lLoading.setIcon(null);
+			lBusy.setIcon(null);
 		} else {
-			lLoading.setIcon(icon);
+			lBusy.setIcon(icon);
 		}
 	}
 
@@ -140,6 +140,9 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 
 
 	/**
+	 * Shows the busy overlay. A delay can be given so that the busy animation
+	 * is now shown right away in case the operation finished within a short time
+	 * and the busy overlay does not need to be shown.
 	 * 
 	 * @param visible
 	 * @param delay The delay in ms to execute the setVisible action
@@ -150,6 +153,10 @@ public class BusyOverlay extends OverlayPanel implements ActionListener {
 		tSetVisible.setDelay(delay);
 		tSetVisible.setInitialDelay(delay);
 		tSetVisible.start();
+
+		if (!visible) {
+			setVisible(false);
+		}
 	}
 
 	/**
