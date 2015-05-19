@@ -107,7 +107,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 		pCentered.setCenteredContent(pContent);
 		add(pCentered, BorderLayout.CENTER);
 
-		setLoadingText(busyText);
+		setBusyText(busyText);
 	}
 
 
@@ -117,7 +117,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 	 * 
 	 * @param busyText
 	 */
-	public void setLoadingText(String busyText) {
+	public void setBusyText(String busyText) {
 		this.busyText = busyText;
 		lBusy.setText(HtmlUtil.textHtml(textFormatted(busyText, 4, ColorUtil.colorToHex(Color.white), true, true)));
 	}
