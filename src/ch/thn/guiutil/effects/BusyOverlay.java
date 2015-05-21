@@ -63,7 +63,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 
 	private Timer tSetVisible = null;
 
-	private final ImageIcon icon = Loader.loadIcon("/32x32/loading.gif");
+	private ImageIcon icon = Loader.loadIcon("/32x32/loading.gif");
 
 	private String busyText = null;
 
@@ -110,6 +110,14 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 		setBusyText(busyText);
 	}
 
+	/**
+	 * Sets the busy icon. This is typically a GIF image to show a busy animation.
+	 * 
+	 * @param icon
+	 */
+	public void setBusyIcon(ImageIcon icon) {
+		this.icon = icon;
+	}
 
 	/**
 	 * Sets the text shown under the busy icon. The text is formatted with some
