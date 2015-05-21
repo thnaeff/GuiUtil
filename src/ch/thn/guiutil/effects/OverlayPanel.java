@@ -42,10 +42,12 @@ public class OverlayPanel extends JPanel {
 
 	private boolean firstPaint = true;
 
+	private Color cBackground = new Color(0, 0, 0, 110);
 
 
 	/**
-	 * A panel over all the other panels with a semi transparent gray background
+	 * A panel over all the other panels with a semi transparent gray background.
+	 * The default background color is Color(0, 0, 0, 110).
 	 * 
 	 * 
 	 * @param layeredPane
@@ -75,6 +77,15 @@ public class OverlayPanel extends JPanel {
 
 	}
 
+	/**
+	 * Sets the color of the overlay panel.<br />
+	 * To create a translucent color, use an alpha value, e.g. Color(0, 0, 0, 110)
+	 * 
+	 * @param color
+	 */
+	public void setColor(Color color) {
+		cBackground = color;
+	}
 
 
 	@Override
@@ -107,7 +118,7 @@ public class OverlayPanel extends JPanel {
 
 		if (showTransparentBackground) {
 			//Show a translucent gray background
-			g.setColor(new Color(0, 0, 0, 110));
+			g.setColor(cBackground);
 			g.fillRect(0, 0, layeredPane.getWidth(), layeredPane.getHeight());
 		}
 
