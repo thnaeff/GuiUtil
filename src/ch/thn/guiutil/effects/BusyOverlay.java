@@ -63,7 +63,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 
 	private Timer tSetVisible = null;
 
-	private ImageIcon icon = Loader.loadIcon("/32x32/loading.gif");
+	private static final ImageIcon icon = Loader.loadIcon("/32x32/loading.gif");
 
 	private String busyText = null;
 
@@ -116,7 +116,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 	 * @param icon
 	 */
 	public void setBusyIcon(ImageIcon icon) {
-		this.icon = icon;
+		lBusy.setIcon(icon);
 	}
 
 	/**
