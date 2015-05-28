@@ -39,7 +39,10 @@ public class GuiUtilTest {
 		JPanel p = new JPanel(new BorderLayout());
 
 
-		//		p.add(new BorderContentTextFieldTest(), BorderLayout.EAST);
+		p.add(new MultiSplitPanelTest(), BorderLayout.CENTER);
+
+		p.add(new BorderContentTextFieldTest(), BorderLayout.EAST);
+
 		//		p.add(new PathTextFieldTest(f.getLayeredPane()), BorderLayout.NORTH);
 
 		p.add(new EffectsTest(), BorderLayout.SOUTH);
