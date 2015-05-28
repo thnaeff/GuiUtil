@@ -18,6 +18,7 @@ package ch.thn.guiutil.component;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -108,6 +109,46 @@ public class LabelledComponentPanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(pContent, BorderLayout.NORTH);
 
+	}
+
+	@Override
+	public void removeAll() {
+		pContent.removeAll();
+	}
+
+	@Override
+	public void remove(Component comp) {
+		throw new UnsupportedOperationException("Operation not implemented");
+	}
+
+	@Override
+	public void remove(int index) {
+		throw new UnsupportedOperationException("Operation not implemented");
+	}
+
+	@Override
+	public Component add(Component comp) {
+		throw new UnsupportedOperationException("Operation not supported. Use addLabelComponent instead.");
+	}
+
+	@Override
+	public Component add(Component comp, int index) {
+		throw new UnsupportedOperationException("Operation not supported. Use addLabelComponent instead.");
+	}
+
+	@Override
+	public void add(Component comp, Object constraints) {
+		throw new UnsupportedOperationException("Operation not supported. Use addLabelComponent instead.");
+	}
+
+	@Override
+	public void add(Component comp, Object constraints, int index) {
+		throw new UnsupportedOperationException("Operation not supported. Use addLabelComponent instead.");
+	}
+
+	@Override
+	public Component add(String name, Component comp) {
+		throw new UnsupportedOperationException("Operation not supported. Use addLabelComponent instead.");
 	}
 
 	/**
