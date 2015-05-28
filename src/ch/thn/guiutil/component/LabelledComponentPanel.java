@@ -107,7 +107,7 @@ public class LabelledComponentPanel extends JPanel {
 		pContent = new JPanel(new GridBagLayout());
 
 		setLayout(new BorderLayout());
-		add(pContent, BorderLayout.NORTH);
+		super.add(pContent, BorderLayout.NORTH);
 
 	}
 
