@@ -85,32 +85,38 @@ public class DisplayTreeTest extends JPanel {
 
 					switch (count) {
 					case 0:
-						System.out.println("add: Node 4");
+						System.out.println("- add: Node 4");
 						tree.addChildNode("4", "Node 4");
 						break;
 					case 1:
-						System.out.println("remove: " + tree.getChildNodes("3"));
+						System.out.println("- remove: " + tree.getChildNodes("3"));
 						tree.removeChildNodes("3");
 						break;
 					case 2:
-						System.out.println("add: Node 5");
+						System.out.println("- add: Node 5");
 						tree.addChildNode("5", "Node 5");
 						break;
 					case 3:
-						System.out.println("remove " + node21.toString());
+						System.out.println("- remove " + node21.toString());
 						node21.removeNode();
 						break;
 					case 4:
-						System.out.println("add: Node 2211 ");
+						System.out.println("- add: Node 2211 ");
 						node221.addChildNode("2.2.1.1", "Node 2.2.1.1");
 						break;
 					case 5:
-						System.out.println("replace: Node 1");
+						System.out.println("- replace: Node 1");
 						tree.getChildNode(0).replaceNode("1r", "Node 1 replaced");
 						break;
 					case 6:
-						System.out.println("replace: Node 2.2.1.1");
-						node221.getChildNode(0).replaceNode("2.2.1.1r", "Node 2.2.1.1 replaced");
+						System.out.println("- replace: Node 2");
+						tree.getChildNode("2", 0).replaceNode("2r", "Node 2 replaced");
+						break;
+					case 7:
+						System.out.println("- change value: *");
+						for (KeyListTreeNode<String, String> node : tree) {
+							node.setNodeValue(node.getNodeValue() + "*");
+						}
 						break;
 					default:
 						stop = true;
@@ -125,7 +131,7 @@ public class DisplayTreeTest extends JPanel {
 
 					try {
 						synchronized (o) {
-							o.wait(1000);
+							o.wait(500);
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();

@@ -140,10 +140,17 @@ public class UITreeModel<N extends ListTreeNodeInterface<?, N>> implements TreeM
 	 * @param sourceNodeIndex
 	 */
 	private void fireNodeChanged(N source, N parent, int sourceNodeIndex) {
-		int[] childIndices = new int[]{sourceNodeIndex};
-		Object[] children = new Object[]{source};
+		int[] childIndices = new int[]{};
+		Object[] children = new Object[]{};
 
-		final TreeModelEvent e = new TreeModelEvent(source, getTreePath(source, true), childIndices, children);
+		//From TreeModelListener.treeNodesChanged javadoc:
+		//"To indicate the root has changed, childIndices and children will be null."
+		if (parent == null) {
+			childIndices = null;
+			children = null;
+		}
+
+		final TreeModelEvent e = new TreeModelEvent(source, getTreePath(source, false), childIndices, children);
 
 		SwingUtilities.invokeLater(new Runnable() {
 
