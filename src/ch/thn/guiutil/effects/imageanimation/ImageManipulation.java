@@ -125,9 +125,14 @@ public abstract class ImageManipulation {
 	/**
 	 * Clears the image by filling it with the given color
 	 */
-	public void clear(Color c) {
+	public synchronized void clear(Color c) {
 		graphicsManipulated.setBackground(c);
-		graphicsManipulated.clearRect(0, 0, imageManipulatedWidth, imageManipulatedHeight);
+		try {
+			graphicsManipulated.clearRect(0, 0, imageManipulatedWidth, imageManipulatedHeight);
+		} catch (NullPointerException e) {
+			//Not sure yet why clearRect throws a null pointer exception here,
+			//the parameters are not NULL...
+		}
 	}
 
 	/**
