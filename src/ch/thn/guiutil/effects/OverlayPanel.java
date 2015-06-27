@@ -40,6 +40,7 @@ public class OverlayPanel extends JPanel {
 
 	private final boolean showTransparentBackground = true;
 
+	private boolean takeFocus = true;
 	private boolean firstPaint = true;
 
 	private Color cBackground = new Color(0, 0, 0, 110);
@@ -87,6 +88,16 @@ public class OverlayPanel extends JPanel {
 		cBackground = color;
 	}
 
+	/**
+	 * If this is set to <code>true</code>, the overlay panel gets the focus so
+	 * that underlying elements can not be controlled by mouse or key events.
+	 * 
+	 * @param takeFocus
+	 */
+	public void takeFocus(boolean takeFocus) {
+		this.takeFocus = takeFocus;
+	}
+
 
 	@Override
 	public void setVisible(boolean visible) {
@@ -99,7 +110,7 @@ public class OverlayPanel extends JPanel {
 		//Make sure the overlay panel gets the focus, otherwise an element below the
 		//overlay panel might still have the focus and can still be controlled
 		//with the keys
-		if (visible) {
+		if (visible && takeFocus) {
 			requestFocusInWindow();
 		}
 
