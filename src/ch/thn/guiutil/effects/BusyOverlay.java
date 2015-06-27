@@ -68,6 +68,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 	private String busyText = null;
 
 	/**
+	 * An overlay panel at a layer depth of 9999 to be above all other components
 	 * 
 	 * 
 	 * @param rootPane
@@ -75,7 +76,7 @@ public class BusyOverlay extends OverlayPanel implements ActionListener, MouseLi
 	 * @param cancelButton
 	 */
 	public BusyOverlay(JLayeredPane rootPane, String busyText, boolean cancelButton) {
-		super(rootPane, false);
+		super(rootPane, false, 9999);
 
 		setLayout(new BorderLayout());
 

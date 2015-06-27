@@ -18,9 +18,14 @@ package ch.thn.guiutil.test;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import ch.thn.guiutil.effects.OverlayPanel;
 
 
 /**
@@ -38,7 +43,7 @@ public class GuiUtilTest {
 
 		JPanel p = new JPanel(new BorderLayout());
 
-		p.add(new DisplayTreeTest());
+		//		p.add(new DisplayTreeTest());
 
 		//		p.add(new MultiSplitPanelTest(), BorderLayout.CENTER);
 
@@ -46,7 +51,7 @@ public class GuiUtilTest {
 
 		//		p.add(new PathTextFieldTest(f.getLayeredPane()), BorderLayout.NORTH);
 
-		//		p.add(new EffectsTest(), BorderLayout.SOUTH);
+		p.add(new EffectsTest(), BorderLayout.SOUTH);
 
 		//		p.add(new SimpleTableTest(), BorderLayout.CENTER);
 
@@ -54,15 +59,17 @@ public class GuiUtilTest {
 
 		//		p.add(new ClippingLabel("asdf löaksfdl aösdlf köals jfö sfas dasfdas fdasdfasdf asdfasdfaslaks fölaks fla jdsölasd fasd fsd"));
 
-		//		p.add(new DisplayTreeTest());
-
 		//		p.add(new CollapsiblePaneTest());
 
 		//		p.add(new MessageDetailsPanelTest());
 
-		//		JComponentDebugger debugger = new JComponentDebugger(p);
-		//		debugger.setLayeredPane(f.getLayeredPane());
-		//		debugger.showInfoFrame(true);
+		OverlayPanel overlayPanel = new OverlayPanel(f.getLayeredPane(), true);
+		overlayPanel.setLayout(new FlowLayout());
+		overlayPanel.add(new JButton("test"));
+		//If event pass through is on, the test button can not be used
+		overlayPanel.setEventPassThrough(true, true);
+		//A text field to test key and mouse events
+		p.add(new JTextField(10));
 
 
 		f.getContentPane().add(p);
